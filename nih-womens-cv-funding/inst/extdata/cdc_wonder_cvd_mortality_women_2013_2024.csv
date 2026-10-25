@@ -1,0 +1,25 @@
+year,sex,cause,icd10,age_adjusted_rate_per_100k,deaths,database,standard_population,status
+2013,Female,all_cvd,I00-I99,184.8,398086,D76,2000 U.S. standard,final
+2014,Female,all_cvd,I00-I99,182.1,399028,D76,2000 U.S. standard,final
+2015,Female,all_cvd,I00-I99,185.5,414191,D76,2000 U.S. standard,final
+2016,Female,all_cvd,I00-I99,181.8,412244,D76,2000 U.S. standard,final
+2017,Female,all_cvd,I00-I99,181.2,418665,D76,2000 U.S. standard,final
+2018,Female,all_cvd,I00-I99,178.6,420164,D158,2000 U.S. standard,final
+2019,Female,all_cvd,I00-I99,176.4,420812,D158,2000 U.S. standard,final
+2020,Female,all_cvd,I00-I99,183.1,441532,D158,2000 U.S. standard,final
+2021,Female,all_cvd,I00-I99,192.1,439729,D158,2000 U.S. standard,final
+2022,Female,all_cvd,I00-I99,183.1,446912,D158,2000 U.S. standard,final
+2023,Female,all_cvd,I00-I99,180.2,433254,D158,2000 U.S. standard,final
+2024,Female,all_cvd,I00-I99,176.3,436763,D158,2000 U.S. standard,final
+2013,Female,heart_disease,"I00-I09,I11,I13,I20-I51",134.3,289758,D76,2000 U.S. standard,final
+2014,Female,heart_disease,"I00-I09,I11,I13,I20-I51",131.8,289271,D76,2000 U.S. standard,final
+2015,Female,heart_disease,"I00-I09,I11,I13,I20-I51",133.6,298840,D76,2000 U.S. standard,final
+2016,Female,heart_disease,"I00-I09,I11,I13,I20-I51",130.4,295995,D76,2000 U.S. standard,final
+2017,Female,heart_disease,"I00-I09,I11,I13,I20-I51",129.6,299578,D76,2000 U.S. standard,final
+2018,Female,heart_disease,"I00-I09,I11,I13,I20-I51",127.9,300977,D158,2000 U.S. standard,final
+2019,Female,heart_disease,"I00-I09,I11,I13,I20-I51",126.2,301280,D158,2000 U.S. standard,final
+2020,Female,heart_disease,"I00-I09,I11,I13,I20-I51",130.2,314186,D158,2000 U.S. standard,final
+2021,Female,heart_disease,"I00-I09,I11,I13,I20-I51",135.6,310661,D158,2000 U.S. standard,final
+2022,Female,heart_disease,"I00-I09,I11,I13,I20-I51",129.5,316114,D158,2000 U.S. standard,final
+2023,Female,heart_disease,"I00-I09,I11,I13,I20-I51",126.8,304970,D158,2000 U.S. standard,final
+2024,Female,heart_disease,"I00-I09,I11,I13,I20-I51",123.8,306616,D158,2000 U.S. standard,final

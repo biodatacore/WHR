@@ -1,0 +1,201 @@
+Review ID,Project number,Fiscal year,Sampling stratum,Pipeline WHR,Pipeline CV (any),Pipeline CV WHR,Pipeline Female-specific/reproductive,Pipeline Maternal/pregnancy,Pipeline Female cancers,Pipeline Female-predominant other,Pipeline Profound: CVD,Pipeline Alzheimer's/dementia,Pipeline Depression/anxiety,Pipeline Osteoporosis,Pipeline Diabetes/obesity,Staff WHR (overall),Staff Female-specific / reproductive,Staff Maternal / pregnancy,Staff Female cancers,Staff Female-predominant other,Staff CVD (CV WHR),Staff Alzheimer's / dementia,Staff Depression / anxiety,Staff Osteoporosis / bone,Staff Diabetes / obesity,Staff Other WHR
+TW-001,1R01EB033806-01,2022,Predominant: female cancers,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0
+TW-002,5R01GM094972-16,2020,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-003,5U10HD047892-10,2014,Profound: diabetes/obesity,1,0,0,0,1,0,0,0,0,0,0,1,1,0,1,0,0,0,0,0,0,1,0
+TW-004,5R35GM151120-03,2025,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-005,5R01HL133684-03,2019,Profound: Alzheimer's/dementia,1,1,1,0,0,0,0,1,1,0,0,0,1,0,0,0,0,1,1,0,0,0,1
+TW-006,5R01MH111099-12,2017,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-007,275201400003I-P00011-27500015-1,2024,Predominant: maternal/pregnancy,1,0,0,0,1,0,0,0,0,0,0,1,1,0,1,0,0,0,0,0,0,1,0
+TW-008,5R01MH109401-03,2018,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-009,4R01CA095572-13,2016,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-010,1R01CA293927-01,2024,Profound: cardiovascular disease,1,1,1,0,0,1,0,1,0,0,0,0,1,0,0,1,0,1,0,0,0,0,0
+TW-011,5R01HD092369-05,2022,Profound: diabetes/obesity,1,0,0,0,0,0,0,0,0,1,0,1,1,0,1,0,0,0,0,0,0,1,0
+TW-012,5R01AG064251-04,2022,"Predominant: female-predominant (autoimmune, thyroid, pain, urinary)",1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-013,1R01AI148231-01A1,2020,"Predominant: female-predominant (autoimmune, thyroid, pain, urinary)",1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0
+TW-014,5R21NS106447-02,2019,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-015,AHD12018001-1-0-1,2019,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-016,1R21HL180247-01A1,2026,Profound: cardiovascular disease,1,1,1,1,0,0,0,1,0,0,0,0,1,1,0,0,0,1,0,0,0,0,1
+TW-017,4R33AG087888-03,2026,Profound: Alzheimer's/dementia,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0
+TW-018,5K00CA223023-05,2021,Predominant: female cancers,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0
+TW-019,5R01HL126585-04,2018,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-020,4R01AI104709-04,2016,Predominant: female cancers,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0
+TW-021,3R01AG081248-03S2,2026,Profound: Alzheimer's/dementia,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-022,5R01HD105305-05,2026,Predominant: maternal/pregnancy,1,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0
+TW-023,1R01HD115985-01,2024,Profound: depression/anxiety,1,0,0,0,1,0,0,0,0,1,0,0,1,0,1,0,0,0,0,1,0,0,0
+TW-024,2R44HD075636-02,2015,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1
+TW-025,5R01HL143431-04,2021,Profound: cardiovascular disease,1,1,1,1,0,0,0,1,0,0,0,1,1,0,1,0,0,0,0,0,0,1,0
+TW-026,3R01HD094380-04S1,2021,Predominant: female-specific/reproductive,1,0,0,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0
+TW-027,3R01HD100022-02S1,2020,Profound: depression/anxiety,1,0,0,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,0,0,1,0
+TW-028,5F32DC022467-02,2026,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-029,1F31NR020146-01A1,2022,"Predominant: female-predominant (autoimmune, thyroid, pain, urinary)",1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0
+TW-030,5K01HL146965-05,2023,Profound: cardiovascular disease,1,1,1,0,0,0,0,1,0,1,0,0,1,0,0,0,0,1,0,1,0,0,0
+TW-031,5R01AG088033-02,2025,Profound: osteoporosis,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0
+TW-032,5U54CA242639-03,2021,Predominant: female cancers,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0
+TW-033,5R01AI123193-09,2025,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-034,1P01AG055367-01A1,2018,Profound: Alzheimer's/dementia,1,0,0,0,0,0,0,1,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0
+TW-035,5R01NS049488-08,2013,Profound: depression/anxiety,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-036,5R01MH132239-02,2024,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-037,1R01AG056426-01A1,2018,Profound: depression/anxiety,1,0,0,1,0,0,0,0,0,1,0,0,1,1,0,0,0,0,0,1,0,0,0
+TW-038,1R01HL141229-01,2018,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-039,3P20GM139760-03S1,2023,Profound: osteoporosis,1,0,0,0,0,1,0,0,0,0,1,0,1,0,0,1,0,0,0,0,1,0,0
+TW-040,1R01DK130856-01A1,2022,Predominant: female-specific/reproductive,1,0,0,1,0,0,1,0,0,0,0,0,1,1,0,0,1,0,0,0,0,0,0
+TW-041,5R44MH126788-03,2025,Profound: depression/anxiety,1,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,0,0,1,0,0,0
+TW-042,5P20MD003373-05,2013,Profound: diabetes/obesity,1,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0
+TW-043,1K43TW011046-01A1,2019,Predominant: maternal/pregnancy,1,0,0,0,1,0,0,0,0,1,0,0,1,0,1,0,0,0,0,1,0,0,0
+TW-044,5R01HD097171-02,2020,Predominant: maternal/pregnancy,1,0,0,1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0
+TW-045,1R03AG066559-01,2020,Profound: osteoporosis,1,0,0,0,0,0,0,0,0,0,1,0,1,1,0,0,0,0,0,0,1,0,1
+TW-046,2P01AG026572-11,2016,Profound: Alzheimer's/dementia,1,0,0,1,0,0,0,0,1,0,0,1,1,1,0,0,0,0,1,0,0,0,0
+TW-047,5P20GM125503-04,2021,Profound: osteoporosis,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0
+TW-048,1K23HD095075-01,2018,Profound: diabetes/obesity,1,1,1,0,1,0,0,1,0,0,0,1,1,0,1,0,0,1,0,0,0,1,0
+TW-049,5R01CA173305-03,2016,Predominant: female cancers,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0
+TW-050,5R01AR085045-02,2026,"Predominant: female-predominant (autoimmune, thyroid, pain, urinary)",1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0
+TW-051,1R44HD105574-01,2021,"Predominant: female-predominant (autoimmune, thyroid, pain, urinary)",1,0,0,1,0,0,1,0,0,0,0,0,1,1,0,0,1,0,0,0,0,0,0
+TW-052,1R01HD083040-01,2015,Predominant: female-specific/reproductive,1,0,0,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1
+TW-053,2UC7AI094660-06,2016,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-054,5R01HL117823-04,2017,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-055,5R00HD101657-04,2023,Profound: diabetes/obesity,1,0,0,0,1,0,0,0,0,0,0,1,1,0,1,0,0,0,0,0,0,1,0
+TW-056,5R01HL158864-03,2023,Predominant: maternal/pregnancy,1,1,1,0,1,0,0,1,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0
+TW-057,1R03AG049288-01A1,2016,Profound: Alzheimer's/dementia,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0
+TW-058,5R01AR059221-03,2013,Profound: osteoporosis,1,0,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0,1,0,0
+TW-059,2R44EB033715-02,2025,Predominant: female cancers,1,0,0,0,1,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0
+TW-060,7R01GM136917-02,2021,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-061,5F31NR020833-02,2024,Profound: cardiovascular disease,1,1,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0
+TW-062,3F32CA210447-01S1,2017,Predominant: female cancers,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0
+TW-063,5R35ES032876-03,2023,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-064,1R01HL135109-01A1,2017,Non-WHR,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-065,261201500036I-0-26100005-1,2017,Profound: osteoporosis,1,0,0,1,0,1,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,0
+TW-066,3R01HD078127-03S1,2015,Predominant: maternal/pregnancy,1,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0
+TW-067,5R01AR082852-02,2024,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-068,5R01CA175080-02,2014,Predominant: female cancers,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0
+TW-069,1R43MH107168-01,2015,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-070,1R21DC021546-01,2023,Predominant: female-specific/reproductive,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-071,1K08AR066569-01,2014,Profound: cardiovascular disease,1,1,1,0,0,0,1,1,0,0,0,0,1,0,0,0,1,1,0,0,0,0,0
+TW-072,5R37CA248434-02,2022,Profound: depression/anxiety,1,0,0,0,0,1,0,0,0,1,0,0,1,0,0,1,0,0,0,1,0,0,0
+TW-073,1S10OD016361-01A1,2015,Non-WHR,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-074,1R01HL150361-01,2020,Profound: Alzheimer's/dementia,1,1,1,0,0,0,0,1,1,0,0,0,1,0,0,0,0,1,0,0,0,0,0
+TW-075,5R01AA025539-05,2021,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-076,7R21AR079633-02,2022,Profound: osteoporosis,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0
+TW-077,5R03HD095091-02,2020,Predominant: female-specific/reproductive,1,0,0,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,1,0
+TW-078,5R01CA262106-04,2025,Predominant: female cancers,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0
+TW-079,5R01MH112523-05,2021,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-080,1R56AG067469-01,2020,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-081,275201300003I-2-27500001-1,2015,Predominant: female-specific/reproductive,1,0,0,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0
+TW-082,5F32HD070583-02,2013,Profound: diabetes/obesity,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0
+TW-083,5K01NS133057-02,2024,"Predominant: female-predominant (autoimmune, thyroid, pain, urinary)",1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-084,5R01HD076901-04,2017,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-085,1R01DK133223-01,2022,Predominant: maternal/pregnancy,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-086,1R03AG056460-01,2017,"Predominant: female-predominant (autoimmune, thyroid, pain, urinary)",1,0,0,1,0,0,1,0,1,0,0,0,1,1,0,0,1,0,0,0,0,0,0
+TW-087,5R35HG010717-02,2020,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-088,5R01AA024044-02,2017,Profound: depression/anxiety,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-089,5R01DA037012-03,2016,Profound: cardiovascular disease,1,1,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1
+TW-090,5R01ES022216-03,2015,"Predominant: female-predominant (autoimmune, thyroid, pain, urinary)",1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-091,5R01HL058144-21,2022,Profound: cardiovascular disease,1,1,1,0,1,0,0,1,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0
+TW-092,5F32AR064679-02,2014,Profound: osteoporosis,1,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0
+TW-093,1R01MH129350-01A1,2023,Profound: depression/anxiety,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-094,5P20MD000182-14,2015,Profound: depression/anxiety,1,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0
+TW-095,5U01CA274996-02,2023,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-096,5R01DK126777-03,2023,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-097,7R03AI123877-03,2017,Predominant: female-specific/reproductive,1,0,0,1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0
+TW-098,5R01AR070898-02,2017,Profound: cardiovascular disease,1,1,1,0,0,0,1,1,0,0,0,0,1,0,0,0,1,1,0,0,0,0,0
+TW-099,5K23ES024803-02,2016,Profound: diabetes/obesity,1,0,0,0,1,0,0,0,0,0,0,1,1,0,1,0,0,0,0,0,0,1,0
+TW-100,5R21HD078819-02,2015,Predominant: female-specific/reproductive,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0
+TW-101,1R61NS123758-01A1,2022,"Predominant: female-predominant (autoimmune, thyroid, pain, urinary)",1,0,0,0,0,0,1,0,0,1,0,0,1,0,0,0,1,0,0,0,0,0,0
+TW-102,1R01AG074009-01,2021,Profound: Alzheimer's/dementia,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0
+TW-103,3R01CA156706-04S1,2013,Predominant: female cancers,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0
+TW-104,5R35GM146774-02,2023,"Predominant: female-predominant (autoimmune, thyroid, pain, urinary)",1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0
+TW-105,5R00AG075327-04,2025,Non-WHR,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-106,5U01CA161809-04,2015,Predominant: female cancers,1,0,0,0,0,1,0,0,0,0,0,0,1,1,0,1,0,0,0,0,0,0,0
+TW-107,1F31NS127574-01A1,2023,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-108,5F30DK093173-03,2014,"Predominant: female-predominant (autoimmune, thyroid, pain, urinary)",1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-109,5R01AI158719-04,2024,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-110,5P01AG036675-13,2024,Profound: osteoporosis,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0
+TW-111,4R01AG053297-07,2026,Profound: Alzheimer's/dementia,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-112,5R01HL164105-03,2025,Non-WHR,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-113,1K99HD080742-01A1,2015,Predominant: maternal/pregnancy,1,0,0,1,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0
+TW-114,5R01AR073840-07,2026,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-115,1R44DK139913-01,2024,"Predominant: female-predominant (autoimmune, thyroid, pain, urinary)",1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-116,5F30HD093338-02,2019,Profound: Alzheimer's/dementia,1,0,0,0,1,0,0,0,1,0,0,1,1,0,1,0,0,0,0,0,0,1,0
+TW-117,5R01GM126028-05,2022,Predominant: female-specific/reproductive,1,0,0,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0
+TW-118,5P01HD071875-02,2015,Predominant: female-specific/reproductive,1,0,0,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0
+TW-119,5R01HL110885-02,2013,Profound: osteoporosis,1,1,1,0,0,0,0,1,0,0,1,1,1,0,0,0,0,1,0,0,0,0,0
+TW-120,5UG3OD023275-02,2017,Predominant: maternal/pregnancy,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-121,5R01HL180944-02,2026,Profound: depression/anxiety,1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-122,5K08AG088493-02,2026,Profound: osteoporosis,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0
+TW-123,1R41AR086050-01A1,2025,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-124,1R01HD083930-01A1,2016,Predominant: female-specific/reproductive,1,0,0,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0
+TW-125,5R44GM130197-03,2020,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-126,1R44HD100231-01A1,2020,Predominant: female-specific/reproductive,1,0,0,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1
+TW-127,3R01ES001332-43S1,2021,"Predominant: female-predominant (autoimmune, thyroid, pain, urinary)",1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-128,5U01AG017719-17,2017,Predominant: female-specific/reproductive,1,0,0,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0
+TW-129,3P30CA014089-47S2,2023,Predominant: female cancers,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0
+TW-130,3U54HD113159-02S2,2024,Profound: diabetes/obesity,1,0,0,0,1,0,0,1,0,1,0,1,1,0,1,0,0,1,0,1,0,1,0
+TW-131,1R15HD090603-01,2017,Profound: osteoporosis,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0
+TW-132,3R01AT010268-04S1,2022,Predominant: maternal/pregnancy,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-133,5R01HD109246-02,2023,Profound: diabetes/obesity,1,0,0,0,1,0,0,0,0,0,0,1,1,0,1,0,0,0,0,0,0,1,0
+TW-134,1R01HL184520-01A1,2026,Profound: cardiovascular disease,1,1,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0
+TW-135,5K23MH106794-05,2019,Profound: depression/anxiety,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0
+TW-136,5R01HD094650-03,2020,Predominant: maternal/pregnancy,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-137,5R01AG057800-02,2018,Profound: Alzheimer's/dementia,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0
+TW-138,5R01CA208851-03,2019,Profound: diabetes/obesity,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0
+TW-139,5R01HD083895-05,2019,Profound: cardiovascular disease,1,1,1,1,0,0,0,1,0,0,0,1,1,1,1,0,0,0,0,0,0,1,0
+TW-140,1R01CA260357-01A1,2021,Predominant: female cancers,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0
+TW-141,2P30AG028741-16,2025,Profound: Alzheimer's/dementia,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-142,1R01NR015029-01,2014,Profound: osteoporosis,1,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0
+TW-143,5R34AA027619-02,2021,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-144,5K23DK095954-04,2017,"Predominant: female-predominant (autoimmune, thyroid, pain, urinary)",1,1,1,0,0,0,1,1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0
+TW-145,5K23ES028736-05,2023,"Predominant: female-predominant (autoimmune, thyroid, pain, urinary)",1,0,0,0,1,0,1,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0
+TW-146,5R21HD090545-02,2018,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-147,5R01CA301579-02,2026,Profound: cardiovascular disease,1,1,1,0,0,1,0,1,0,0,0,0,1,0,0,1,0,1,0,0,0,0,0
+TW-148,5R01ES032242-04,2023,Profound: cardiovascular disease,1,1,1,0,1,0,0,1,0,0,0,1,1,0,1,0,0,0,0,0,0,1,0
+TW-149,5R21TW011222-02,2019,Predominant: female cancers,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0
+TW-150,5U01AI069923-08,2013,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-151,1K01MH103444-01A1,2014,Predominant: maternal/pregnancy,1,0,0,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,0
+TW-152,5U01AR076092-05,2025,"Predominant: female-predominant (autoimmune, thyroid, pain, urinary)",1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0
+TW-153,5R01AI125320-02,2017,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-154,1R01HD093778-01,2018,Predominant: female-specific/reproductive,1,0,0,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0
+TW-155,1R21AG067613-01,2020,Profound: Alzheimer's/dementia,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0
+TW-156,5R01ES024946-02,2017,Profound: diabetes/obesity,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0
+TW-157,5P30CA014089-43,2018,Profound: diabetes/obesity,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0
+TW-158,5R37AI048689-24,2024,"Predominant: female-predominant (autoimmune, thyroid, pain, urinary)",1,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,1,0,0,0,0,0,0
+TW-159,5R01MH108837-11,2025,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-160,5R01AR071326-03,2021,Profound: diabetes/obesity,1,0,0,0,0,0,1,0,0,0,0,1,1,0,0,0,1,0,0,0,0,0,0
+TW-161,1R01AG092395-01A1,2026,Profound: Alzheimer's/dementia,1,1,1,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,1
+TW-162,5R01CA175100-02,2014,Profound: diabetes/obesity,1,0,0,0,0,1,0,0,0,0,0,1,1,0,0,1,0,0,0,0,0,1,0
+TW-163,1K22NS105922-01,2018,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-164,5R01AR068438-03,2017,Profound: osteoporosis,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0
+TW-165,5R01DE014036-13,2015,Profound: osteoporosis,1,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0
+TW-166,5R01CA196243-03,2017,Predominant: female cancers,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0
+TW-167,5R01CA196953-05,2020,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-168,5F32AG079615-02,2023,Profound: depression/anxiety,1,0,0,0,0,0,0,0,1,1,0,0,1,0,0,0,0,0,1,1,0,0,0
+TW-169,3R35GM146885-02S1,2023,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-170,5R01MH115174-04,2021,Profound: depression/anxiety,1,0,0,0,1,0,0,0,0,1,0,0,1,0,1,0,0,0,0,1,0,0,0
+TW-171,7R01HD097171-04,2021,Predominant: maternal/pregnancy,1,0,0,1,1,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0
+TW-172,5R01HD089831-05,2020,Predominant: female-specific/reproductive,1,0,0,1,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1
+TW-173,1F32AR064679-01,2013,Profound: osteoporosis,1,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0
+TW-174,1F31NR020431-01,2022,Profound: diabetes/obesity,1,1,1,0,1,0,0,1,0,0,0,1,1,0,1,0,0,1,0,0,0,1,0
+TW-175,5R01HD086313-03,2017,Predominant: maternal/pregnancy,1,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0
+TW-176,1DP2ES039816-01,2026,Predominant: maternal/pregnancy,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-177,5R01AG082080-02,2025,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-178,1R01AG066088-01,2019,Profound: Alzheimer's/dementia,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0
+TW-179,5R01HD042280-09,2013,Predominant: female-specific/reproductive,1,0,0,1,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0
+TW-180,3R43HL127878-01S1,2016,Profound: cardiovascular disease,1,1,1,0,0,1,0,1,0,0,0,0,1,0,0,1,0,1,0,0,0,0,0
+TW-181,5R01AG057505-08,2026,Profound: Alzheimer's/dementia,1,0,0,0,0,0,0,0,1,1,0,0,1,0,0,0,0,0,1,1,0,0,0
+TW-182,5R01AG084676-02,2025,Profound: cardiovascular disease,1,0,0,0,0,1,0,1,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0
+TW-183,1R01HD121601-01,2026,Predominant: female-specific/reproductive,1,0,0,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0
+TW-184,5R01CA190851-04,2018,Predominant: female cancers,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0
+TW-185,5P01CA111412-14,2019,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-186,5K08DK100534-02,2015,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-187,1R21HD109546-01A1,2023,Profound: depression/anxiety,1,0,0,0,1,0,0,0,0,1,0,0,1,0,1,0,0,0,0,1,0,0,0
+TW-188,5R01HD113553-03,2026,Profound: diabetes/obesity,1,0,0,0,1,0,0,0,0,0,0,1,1,0,1,0,0,0,0,0,0,1,0
+TW-189,1R01HD104553-01,2020,Profound: diabetes/obesity,1,0,0,0,1,0,0,0,0,0,0,1,1,0,1,0,0,0,0,0,0,0,0
+TW-190,5U54AG062319-09,2021,Profound: cardiovascular disease,1,0,0,1,0,0,0,1,0,0,1,1,1,1,0,0,0,0,0,0,1,1,0
+TW-191,1F31NS137770-01,2024,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-192,5U01AR069869-06,2021,Profound: osteoporosis,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0
+TW-193,7K99HD096125-02,2019,Predominant: maternal/pregnancy,1,1,1,0,1,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0
+TW-194,1K01MH111951-01A1,2017,Profound: depression/anxiety,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0
+TW-195,5R25HD079344-10,2023,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-196,5R01EB030352-02,2021,Predominant: female cancers,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0
+TW-197,1R01DK128862-01,2021,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TW-198,1R21MH122808-01,2020,Profound: depression/anxiety,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0
+TW-199,5R01MD009064-04,2017,Predominant: maternal/pregnancy,1,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0
+TW-200,2R01DE016689-06A1,2013,Non-WHR,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

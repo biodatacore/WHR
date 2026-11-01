@@ -6,9 +6,9 @@
 #'          label disagreements are counted; disagreements are written to
 #'          outputs/compare_to_shipped.csv for inspection.
 #' USAGE    WHR_WORK_DIR=/path/to/rebuild Rscript R/compare_to_shipped.R
-#' NOTE     Re-downloaded RePORTER records change over time (FY2026 in particular, which was
-#'          retrieved on 2026-10-20 in data/shipped, while the v10 estimates use the
-#'          2026-10-31 freeze), so small differences are expected.
+#' NOTE     Re-downloaded RePORTER records change over time. data/shipped uses the
+#'          2026-10-31 FY2026 freeze; a newer download of that incomplete year will differ,
+#'          so small differences are expected.
 
 source("R/00_setup.R")
 rd <- function(f) { d <- read.csv(gzfile(f), na.strings = "NA", colClasses = c(FULL_PROJECT_NUM = "character", APPLICATION_ID = "character", title = "character", cls = "character", conf = "character", ACT = "character", IC = "character"), check.names = FALSE); setDT(d) }

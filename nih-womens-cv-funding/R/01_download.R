@@ -22,9 +22,9 @@
 #' RATIONALE
 #'   The API is the only source for the current, incomplete fiscal year. Records are added
 #'   and revised daily, so re-fetching gives different FY2026 numbers: the published results
-#'   are tied to a saved JSON freeze. The v10 estimates use the RePORTER freeze of 2026-10-31
-#'   (FY2026: 69,809 records). The files in data/shipped are the earlier 2026-10-20 extract.
-#'   Exact reproduction of either freeze needs that freeze's saved responses.
+#'   are tied to a saved JSON freeze. data/shipped and the v10 estimates use the RePORTER
+#'   freeze of 2026-10-31 (FY2026: 69,809 records). A later download will differ.
+#'   Exact reproduction of that freeze needs those saved responses.
 
 source("R/00_setup.R")
 args <- commandArgs(trailingOnly = TRUE)

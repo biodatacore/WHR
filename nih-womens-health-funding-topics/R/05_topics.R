@@ -96,8 +96,8 @@ w3 <- excl_w(m3); wk <- excl_w(mk)
 fg3 <- alloc(GC, !m3); fgk <- alloc(GC, !mk); fs3 <- alloc(SC, !m3); fsk <- alloc(SC, !mk)
 # v10 (excl): the excluded awards are removed from the NIH denominator as well. The award
 # definitions are applied to EVERY NIH project (WHR or not), so award dollars leave the
-# denominator even where a component was not classified WHR. The pre-v10 feature cache has
-# no CORE_PROJECT_NUM; the sensitivity then cannot be computed and stops.
+# denominator even where a component was not classified WHR. data/shipped features include
+# CORE_PROJECT_NUM. An older feature table without it cannot compute this sensitivity and stops.
 if (!"CORE_PROJECT_NUM" %in% names(X)) {
   if (v10_on("excl")) {
     stop("WHR feature table has no CORE_PROJECT_NUM, so excluded awards cannot be removed from the NIH denominator. ",

@@ -2,11 +2,11 @@
 
 Both pipelines (`nih-womens-cv-funding` and `nih-womens-health-funding-topics`) now use the v10 rules by default. Set `WHR_V10_RULES=none` to recover the previous classification logic. The switches live in `R/v10.R`.
 
-The committed `data/shipped/` extracts are still the pre-v10 feature cache (FY2026 retrieved 2026-10-20). They do not contain the new feature columns or the 2026-10-31 FY2026 refresh, so a default run stops in `R/03_classify.R` until features are rebuilt from raw project text (`WHR_REBUILD=1`). `tests/expected_values.csv` stores the v10 numbers from that freeze.
+`data/shipped/` is the v10 cache for that freeze: 869,672 project-years in the universe, text for 76,374 WHR project-years (and, in the cardiovascular pipeline, every broad-CV project-year as well). `tests/expected_values.csv` stores the v10 numbers. The default rules reproduce them from `data/shipped/` with no raw files. `WHR_V10_RULES=none` may miss some topic text.
 
 ## Data refresh
 
-* FY2026 was re-fetched from the RePORTER API v2 on 2026-10-31. FY2026 now has 69,809 records ($37.65 billion total cost), up from 69,556 ($36.92 billion) on 2026-10-20. FY2026 is still incomplete and still contains no intramural projects. The saved 2026-10-31 responses are not in this repository.
+* FY2026 was re-fetched from the RePORTER API v2 on 2026-10-31. FY2026 now has 69,809 records ($37.65 billion total cost), up from 69,556 ($36.92 billion) on 2026-10-20. FY2026 is still incomplete and still contains no intramural projects. The derived `data/shipped/` cache from that freeze is in the repository. The raw API responses are not.
 * The 47 FY2020/FY2024 intramural project-years that lack text were re-queried on 2026-10-31. None has an abstract yet.
 * FY2013–2025 inputs are unchanged.
 
@@ -42,4 +42,4 @@ The committed `data/shipped/` extracts are still the pre-v10 feature cache (FY20
 * OT2HL158287 removed from both the women's-CV numerator and the CV denominator: 8.51% in FY2023–25. The award is 1.75 percentage points and 43% of the gain.
 * Profound share of WHR in FY2013–15: 11.4% to 16.6%, mainly because autoimmune disease moved to profound.
 
-The female-predominant rule (conditions count without a separate women mention) is the largest single classification change. It adds project-years whose text is not in the shipped pre-v10 text extract, which is why that extract cannot reproduce v10.
+The female-predominant rule (conditions count without a separate women mention) is the largest single classification change. The shipped text extract includes those project-years.

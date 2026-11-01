@@ -76,7 +76,7 @@ v10 changes to that definition, on by default (`R/v10.R`; `WHR_V10_RULES`):
 
 ## Replication data (included)
 
-`data/shipped/` holds de-identified, compressed per-fiscal-year files derived from public NIH RePORTER records: an analytic file of every NIH project-year with funding and classification features, row-level cardiovascular term counts (where used), the title and text of every project-year in the main women's health research tier, and the project universe. With them, `Rscript R/run_all.R` reproduces every reported number and figure without any raw files (about 10–15 min). No investigator names, contact details or committee-derived labels are included. Contents, column definitions, checksums and how to compare a rebuild from raw records are documented in [`data/README.md`](data/README.md). De-identified results of the blinded manual validation are in `data/validation/`.
+`data/shipped/` holds de-identified, compressed per-fiscal-year files derived from public NIH RePORTER records (FY2026 freeze 2026-10-31; 869,672 project-years in the companion universe). It has an analytic file of every NIH project-year with the v10 classification features, row-level cardiovascular term counts, and title plus text for the v10 women's health research tier (76,374 project-years) and for every broad-cardiovascular project-year. That extra cardiovascular text is what the key-award exclusion uses. The text supports the default v10 rules. `WHR_V10_RULES=none` may miss some topic text, because projects the previous rules called WHR and v10 does not are not all in the text files. With the default rules, `Rscript R/run_all.R` reproduces every reported number and figure without any raw files (about 10–15 min). No investigator names, contact details or committee-derived labels are included. Contents, column definitions, checksums and how to compare a rebuild from raw records are documented in [`data/README.md`](data/README.md). De-identified results of the blinded manual validation are in `data/validation/`.
 
 ## Raw data (optional; not included in this repository)
 
@@ -99,8 +99,8 @@ zfix/api_z.json             FY2020/2024  intramural titles/abstracts (R/01_downl
    (needs the FY2020 and FY2024 files for the intramural step). The published analysis used
    responses retrieved on 2026-10-31 for the v10 estimates (69,809 FY2026 records); FY2026 was
    incomplete and RePORTER revises records daily, so a new download gives somewhat different
-   FY2026 numbers. The extract in `data/shipped/` is the earlier 2026-10-20 download.
-   Exact reproduction of the v10 estimates requires the saved 2026-10-31 responses: [DATA AVAILABILITY STATEMENT / ARCHIVE LINK].
+   FY2026 numbers. `data/shipped/` is that 2026-10-31 extract.
+   Exact reproduction from raw files requires the saved 2026-10-31 responses: [DATA AVAILABILITY STATEMENT / ARCHIVE LINK].
 3. **FY2013–2023, NASEM committee workbooks** (`AllData_{FY}.xlsx`): these are the grant-level
    files assembled by the National Academies committee for *A New Vision for Women's Health
    Research* (2025; doi:10.17226/28586). They contain investigator names and are **not public**;
@@ -145,11 +145,11 @@ Rscript -e 'install.packages(c("data.table","stringi","readxl","jsonlite","curl"
 # optional: point the pipeline at raw data / scratch space (or edit config.R)
 export WHR_RAW_DIR=/path/to/raw   WHR_WORK_DIR=/path/to/scratch   WHR_WORKERS=4
 
-# data/shipped is the pre-v10 feature cache (FY2026 freeze 2026-10-20). The default
-# v10 rules stop in R/03_classify.R until features are rebuilt from raw text.
-Rscript R/run_all.R --raw        # v10 from raw NIH files, including the 2026-10-31 FY2026 JSON
+# data/shipped is the v10 cache (FY2026 freeze 2026-10-31). Default rules:
+Rscript R/run_all.R              # shipped data unless data/raw exists; then verification
+Rscript R/run_all.R --raw        # rebuild from raw NIH files, including the 2026-10-31 FY2026 JSON
 WHR_REBUILD=1 Rscript R/run_all.R --raw   # ignore an older feature cache in the work directory
-WHR_V10_RULES=none Rscript R/run_all.R    # previous rules on the shipped cache; does not match tests/expected_values.csv
+WHR_V10_RULES=none Rscript R/run_all.R    # previous rules; topic text may be missing and checks will not match
 Rscript R/run_all.R --from 04    # re-run from a step (intermediate files are kept)
 Rscript R/07_verify.R            # re-check at any time
 ```
@@ -176,7 +176,7 @@ Intermediate files need about 6 GB of disk.
 
 ## Verification
 
-`tests/expected_values.csv` lists each checked number from the v10 analysis (RePORTER freeze 2026-10-31) with its full-precision value and an absolute tolerance (half a unit of the precision reported; counts and years exact). The committed `data/shipped/` feature tables are the pre-v10 cache. They do not contain the v10 feature columns (`cls_np`, `fpred`, `breast`, `wout`, and the CV columns `ts10`, `heme`, `ctox`) or the 2026-10-31 FY2026 refresh, so `Rscript R/run_all.R` on a fresh clone stops in `R/03_classify.R` until features are rebuilt from raw project text. `WHR_V10_RULES=none` runs the previous rules on that cache and will not match `tests/expected_values.csv`.
+`tests/expected_values.csv` lists each checked number from the v10 analysis (RePORTER freeze 2026-10-31) with its full-precision value and an absolute tolerance (half a unit of the precision reported; counts and years exact). `Rscript R/run_all.R` on a fresh clone uses `data/shipped/` and checks those values. `WHR_V10_RULES=none` does not match them, and it may miss topic text.
 
 On the previous pipeline, this R port reproduced 126 of 131 checked values within tolerance (all 52 mortality values exactly). The other 5 agreed at the precision printed then (6,376 vs 6,378 women's-CV project-years), because of a regex word-boundary difference between ICU and Python affecting 2 project-years. The v10 expected count is 6,338 women's-CV project-years.
 

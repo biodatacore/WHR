@@ -7,4 +7,4 @@ This repository holds the annotated R code (pipeline v10) and de-identified repl
 | [`nih-womens-cv-funding/`](nih-womens-cv-funding/) | Women's cardiovascular research funding at NIH |
 | [`nih-womens-health-funding-topics/`](nih-womens-health-funding-topics/) | NIH women's health research funding across major areas of need |
 
-Each folder is self-contained. The files in `data/shipped/` are the pre-v10 feature cache (FY2026 retrieved 2026-10-20). The default v10 rules need a rebuild from raw project text; `WHR_V10_RULES=none` runs the previous rules on the shipped cache. See each folder's README and `data/README.md`. Data are from NIH RePORTER (public domain); FY2026 is incomplete.
+Each folder is self-contained. `data/shipped/` is the v10 cache (FY2026 freeze 2026-10-31; 869,672 project-years; text for 76,374 women's health research project-years). Open a folder and run `Rscript R/run_all.R`. See each folder's README and `data/README.md`. Data are from NIH RePORTER (public domain); FY2026 is incomplete.

@@ -98,8 +98,8 @@ v10_features <- function(P, fy) {
 }
 
 #' S5.3-S5.6 tiers with the v10 switches. With no switch on, identical to the v9 assign_tiers().
-#' The pre-v10 feature cache in data/shipped lacks the v10 columns; those rules then stop
-#' with an explicit error instead of reading missing columns. WHR_V10_RULES=none still runs.
+#' data/shipped is the v10 cache (FY2026 freeze 2026-10-31) and includes these columns.
+#' A feature table that lacks them stops with an explicit error. WHR_V10_RULES=none still runs.
 v10_assign_tiers <- function(X) {
   need <- c("cls_np", "conf_np", "cls_nb", "conf_nb", "cls_npnb", "conf_npnb",
             "wout", "breast", "t_breast", "fpred", "t_fpred")
@@ -107,8 +107,8 @@ v10_assign_tiers <- function(X) {
     miss <- setdiff(need, names(X))
     if (length(miss)) {
       stop("Cached WHR features lack v10 columns (", paste(miss, collapse = ", "),
-           "). data/shipped is the pre-v10 feature cache (FY2026 freeze 2026-10-20) and cannot apply rules a/b/d/f. ",
-           "Rebuild features from raw project text with WHR_REBUILD=1, or set WHR_V10_RULES=none to run the previous rules. See README.md.")
+           "). The committed data/shipped extract includes them (FY2026 freeze 2026-10-31). ",
+           "Rebuild this table from raw project text with WHR_REBUILD=1, or set WHR_V10_RULES=none to run the previous rules. See README.md.")
     }
   }
   CENT <- grepl(CENTER_ACTIVITY, fifelse(is.na(X$ACT), "", X$ACT), perl = TRUE) |
@@ -212,7 +212,8 @@ v10_cv_tiers <- function(F) {
     miss <- setdiff(need, names(F))
     if (length(miss)) {
       stop("Cached CV row features lack v10 columns (", paste(miss, collapse = ", "),
-           "). data/shipped/cv_features is the pre-v10 cache. Rebuild from raw rows with WHR_REBUILD=1, or set WHR_V10_RULES=none. See README.md.")
+           "). The committed data/shipped/cv_features extract includes them (FY2026 freeze 2026-10-31). ",
+           "Rebuild from raw rows with WHR_REBUILD=1, or set WHR_V10_RULES=none. See README.md.")
     }
   }
   F[, strict9 := ts >= 1 | s >= 5]

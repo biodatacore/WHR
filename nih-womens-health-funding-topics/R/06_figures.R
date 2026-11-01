@@ -5,8 +5,9 @@
 #' bars with an asterisk in bar charts, dotted/shaded in line charts.
 #' Figure 1  Total NIH funding (grey bars) with WHR funding (red bars, partial tier v3),
 #'           labelled with the WHR % of NIH dollars.
-#' Figure 2  A: 7 topic groups as % of all NIH funding; B: selected subtopics as % of WHR funding.
-#'           Female cancers and breast cancer in red; direct line labels; FY2026 shaded.
+#' Figure 2  Three stacked panels. A: predominant / profound / cross-cutting / unclassified
+#'           as % of NIH funding; B: predominant families as % of WHR; C: profound conditions
+#'           as % of WHR (CVD in red; autoimmune disease in place of osteoporosis under v10).
 #' INPUTS   work_dir outputs of 03 and 05
 #' OUTPUTS  out_dir/Figure1.{png,pdf}, out_dir/Figure2_v3.{png,pdf} (predominant/profound; the earlier Figure2 layout is in git history)
 
@@ -81,16 +82,16 @@ famcol <- function(cols) rowSums(T$fcs[, cols, drop = FALSE])
 FAM <- cbind(`Female cancers` = famcol(WHR_TOPICS[group == "3 Female cancers"]$subtopic),
              `Maternal health` = famcol(WHR_TOPICS[group == "2 Maternal / pregnancy health"]$subtopic),
              `Female-specific conditions` = famcol(WHR_TOPICS[group == "1 Female-specific conditions"]$subtopic),
-             `Female-predominant conditions` = famcol(c("Autoimmune (lupus, RA, MS, Sjogren, scleroderma)", "Thyroid", "Migraine / chronic pain / fibromyalgia", "Urinary incontinence / UTI")))
+             `Female-predominant conditions` = famcol(intersect(T$PRED, c("Autoimmune (lupus, RA, MS, Sjogren, scleroderma)", "Osteoporosis / bone", "Thyroid", "Migraine / chronic pain / fibromyalgia", "Urinary incontinence / UTI"))))
 spA <- list(c("Predominant", "Predominant", K, "solid"), c("Profound", "Profound", RED, "solid"), c("Cross-cutting", "Cross-cutting", G, "solid"), c("Unclassified", "Unclassified", G, "dotted"))
 spB <- list(c("Female cancers", "Female cancers", K, "solid"), c("Maternal health", "Maternal health", K, "dashed"),
             c("Female-specific conditions", "Female-specific conditions", K, "dotted"), c("Female-predominant conditions", "Female-predominant conditions", G, "solid"))
 spC <- list(c("Cardiovascular disease", "Cardiovascular disease", RED, "solid"), c("Diabetes / obesity", "Diabetes / obesity", G, "solid"),
             c("Depression / anxiety / PTSD / eating disorders", "Depression / anxiety", K, "dashed"), c("Alzheimer's / dementia / cognitive aging", "Alzheimer's / dementia", K, "solid"),
-            c("Osteoporosis / bone", "Osteoporosis / bone", G, "dashed"))
-pA <- panel(spA, T$fcat, T$NIH, "Share of total NIH funding, %", "A", 0.5)
+            if ("Osteoporosis / bone" %in% T$PROF) c("Osteoporosis / bone", "Osteoporosis / bone", G, "dashed") else c("Autoimmune (lupus, RA, MS, Sjogren, scleroderma)", "Autoimmune disease", G, "dashed"))
+pA <- panel(spA, T$fcat, T$NIH, "Share of total NIH funding, %", "A", 0.8)
 pB <- panel(spB, FAM, T$WT, "Share of WHR funding, %", "B", 3.6)
-pC <- panel(spC, T$fcs, T$WT, "Share of WHR funding, %", "C", 0.62)
+pC <- panel(spC, T$fcs, T$WT, "Share of WHR funding, %", "C", 0.95)
 # three panels stacked vertically using base grid (no extra packages)
 png_pdf <- function(dev, file, ...) { dev(file, ...); grid::grid.newpage(); lay <- grid::grid.layout(3, 1)
   grid::pushViewport(grid::viewport(layout = lay)); for (i in 1:3) print(list(pA, pB, pC)[[i]], vp = grid::viewport(layout.pos.row = i)); dev.off() }

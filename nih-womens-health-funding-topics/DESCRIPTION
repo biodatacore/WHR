@@ -1,9 +1,9 @@
 Package: nih.womens.health.funding.topics
 Title: Temporal Trends in NIH Funding for Women's Health Research, Fiscal Years 2013-2026: Reproduction Code
-Version: 1.0.0
-Description: Annotated R pipeline that reproduces every number and figure of the
-    accompanying brief report from public NIH RePORTER/ExPORTER records (plus NASEM committee
-    workbooks for FY2013-2023). Not an installable package; this file records the
+Version: 10.0.0
+Description: Annotated R pipeline (v10) that reproduces the brief report from public NIH
+    RePORTER/ExPORTER records (plus NASEM committee workbooks for FY2013-2023).
+    v10 estimates use the RePORTER freeze of 2026-10-31. Not an installable package; this file records the
     R and CRAN package versions used (install with
     install.packages(c("data.table", "stringi", "readxl", "jsonlite", "curl", "sandwich",
     "ggplot2", "openxlsx", "ragg", "systemfonts"))).

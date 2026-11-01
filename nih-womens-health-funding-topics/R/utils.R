@@ -284,15 +284,41 @@ keyword_classify <- function(P) {
   pop <- n_match(t, CLS_POP) - n_match(t, CLS_EXCL)
   tcore <- vapply(CLS_CORE, function(p) has_match(tl, p), logical(length(t)))
   if (is.null(dim(tcore))) tcore <- matrix(tcore, nrow = length(t), dimnames = list(NULL, names(CLS_CORE)))
-  any_tcore <- rowSums(tcore) > 0
   tpop <- has_match(tl, CLS_POP)
+  male <- n_match(t, CLS_MALE)
+  broad_t <- has_match(tl, CLS_BROAD)
+  focus_t <- has_match(tl, CLS_TITLE_WHR_FOCUS); female_t <- has_match(tl, CLS_TITLE_FEMALE); center_t <- has_match(tl, CLS_TITLE_CENTER)
+  # v10 rule (a): the same logic with the pregnancy/maternal group and "mother(s)" removed, used
+  # when a project's WHR call depends on pregnancy terms but it has no maternal-outcome evidence.
+  mothers <- n_match(t, r"---(\bmothers?\b)---"); tmothers <- has_match(tl, r"---(\bmothers?\b)---")
+  tpop_np <- has_match(gsub("\\bmothers?\\b", " ", tl, perl = TRUE), CLS_POP)
+  preg <- colnames(cnts) == "pregnancy/maternal"
+  base_out <- .kw_logic(cnts, tcore, pop, tpop, male, broad_t, focus_t, female_t, center_t, no_broad = FALSE)
+  P[, `:=`(Classification = base_out$cls, Confidence = base_out$conf, Rationale = base_out$why,
+           pop_n = pop, core_n = rowSums(cnts))]
+  if (exists("V10_KW_VARIANTS") && isTRUE(V10_KW_VARIANTS)) {
+    c0 <- cnts; c0[, preg] <- 0L; t0 <- tcore; t0[, preg] <- FALSE
+    np  <- .kw_logic(c0, t0, pop - mothers, tpop_np, male, broad_t, focus_t, female_t, center_t, no_broad = FALSE)
+    nb  <- .kw_logic(cnts, tcore, pop, tpop, male, broad_t, focus_t, female_t, center_t, no_broad = TRUE)
+    npnb <- .kw_logic(c0, t0, pop - mothers, tpop_np, male, broad_t, focus_t, female_t, center_t, no_broad = TRUE)
+    P[, `:=`(cls_np = np$cls, conf_np = np$conf, cls_nb = nb$cls, conf_nb = nb$conf, cls_npnb = npnb$cls, conf_npnb = npnb$conf)]
+  }
+  P[]
+}
+
+#' The two-pass if/elif logic of keyword_classify on precomputed counts (order preserved exactly).
+#' no_broad = TRUE drops the blanket centre/training/core down-grades (v10 rule b); the caller
+#' decides when that variant applies (only with women's/maternal outcome evidence).
+.kw_logic <- function(cnts, tcore, pop, tpop, male, broad_t, focus_t, female_t, center_t, no_broad = FALSE) {
+  n <- nrow(cnts)
+  any_tcore <- rowSums(tcore) > 0
   core <- rowSums(cnts)
   weak <- colnames(cnts) %in% WEAK_GROUPS
   strong <- rowSums(cnts[, !weak, drop = FALSE])
   sexd <- cnts[, "sex/gender differences"]
   # ---- pass 1: title evidence beats abstract evidence; thresholds chosen on hand review
-  cls <- rep("Non-WHR", length(t)); conf <- rep("High", length(t))
-  why <- rep("no WHR terms in title/abstract/narrative", length(t))
+  cls <- rep("Non-WHR", n); conf <- rep("High", n)
+  why <- rep("no WHR terms in title/abstract/narrative", n)
   set_ <- function(m, a, b, c) { cls[m] <<- a; conf[m] <<- b; why[m] <<- c }
   r1 <- any_tcore | tpop
   r2 <- !r1 & (strong >= 4 | pop >= 6)
@@ -303,15 +329,14 @@ keyword_classify <- function(P) {
   set_(r3, "Non-WHR", "Low", "borderline: some WHR terms but not a central focus")
   set_(r4, "Non-WHR", "Medium", "incidental WHR term(s) only")
   # centre/training/core grants with a condition word (but no population word) in the title
-  set_(any_tcore & has_match(tl, CLS_TITLE_CENTER) & !tpop, "WHR", "Low", "WHR term in title of broad center/training grant")
+  if (!no_broad) set_(any_tcore & center_t & !tpop, "WHR", "Low", "WHR term in title of broad center/training grant")
   # ---- pass 2: exclusions and down-grades (an if/elif chain evaluated on the pass-1 result)
-  male <- n_match(t, CLS_MALE); fem <- core + pop
-  broad_t <- has_match(tl, CLS_BROAD)
+  fem <- core + pop
   only_weak_title <- rowSums(tcore[, !weak, drop = FALSE]) == 0 & !tpop   # title hits are all weak groups
   w <- cls == "WHR"; c0 <- conf
-  e1 <- w & male > fem & !has_match(tl, CLS_TITLE_FEMALE)
-  e2 <- !e1 & w & c0 != "High" & broad_t
-  e3 <- !e1 & !e2 & w & c0 == "High" & broad_t & !has_match(tl, CLS_TITLE_WHR_FOCUS)
+  e1 <- w & male > fem & !female_t
+  e2 <- !e1 & w & c0 != "High" & broad_t & !no_broad
+  e3 <- !e1 & !e2 & w & c0 == "High" & broad_t & !focus_t & !no_broad
   e4 <- !e1 & !e2 & !e3 & w & c0 == "Medium" & core < 4 & pop < 10
   e5 <- !e1 & !e2 & !e3 & !e4 & w & c0 == "High" & only_weak_title & pop < 3
   set_(e1, "Non-WHR", "Low", "reproductive/pelvic terms but male-focused")
@@ -319,8 +344,7 @@ keyword_classify <- function(P) {
   set_(e3, "WHR", "Low", "WHR term in title of broad grant")
   set_(e4, "Non-WHR", "Low", "women/female mentioned repeatedly but no WHR condition focus")
   conf[e5] <- "Medium"; why[e5] <- "title mentions female hormone or female-prevalent condition"
-  P[, `:=`(Classification = cls, Confidence = conf, Rationale = why, pop_n = pop, core_n = core)]
-  P[]
+  list(cls = cls, conf = conf, why = why)
 }
 
 # ---------------------------------------------------------------------------------------

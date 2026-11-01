@@ -36,5 +36,6 @@ options(datatable.print.class = FALSE, width = 200, scipen = 6)
 source("config.R")        # -> CONFIG (paths, years, seeds)
 source("R/terms.R")       # -> keyword dictionaries (regular expressions)
 source("R/utils.R")       # -> helper functions
+source("R/v10.R")         # -> v10 rule switches (CHANGE_LOG.md)
 setDTthreads(CONFIG$dt_threads)
 for (.d in c(CONFIG$work_dir, CONFIG$out_dir)) dir.create(.d, recursive = TRUE, showWarnings = FALSE)

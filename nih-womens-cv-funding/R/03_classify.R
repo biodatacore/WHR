@@ -191,6 +191,9 @@ yearly <- function(X, zrows) {
   list(Y = Y, rate = rate)
 }
 
+# v10: the rule-switch versions in R/v10.R replace the three functions above (CHANGE_LOG.md).
+features <- v10_features; assign_tiers <- v10_assign_tiers; yearly <- v10_yearly
+
 # ======================================================================================
 # A. WHR tiers
 # ======================================================================================
@@ -201,6 +204,8 @@ yy <- yearly(X, zrows)
 saveRDS(X, work_path("whr", "tiers.rds"))
 saveRDS(yy$Y, work_path("whr", "yearly.rds"))
 saveRDS(yy$rate, work_path("whr", "imputation_rates.rds"))
+saveRDS(yy$rate_obs, work_path("whr", "imputation_rates_observed.rds"))   # v10: sensitivity rate (v9 method)
+say("v10 rule switches on: ", paste(V10, collapse = ","))
 say("intramural imputation rates (%): ", paste(names(yy$rate), round(100 * yy$rate, 2), collapse = ", "))
 print(yy$Y[, .(FY, nih_B = round(nih_B, 3), v3_n, v3_B = round(v3_B, 3), v3_pct = round(v3_pct, 3),
                strict = round(strict_sexdiff_pct, 3), nasem_comp = round(nasem_comp_pct, 3))])
@@ -232,13 +237,22 @@ cv_year_features <- function(fy) {
   if (file.exists(f) && !isTRUE(CONFIG$rebuild)) return(sprintf("%d: cached", fy))
   d <- nih_rows(fy, load_rows(fy))
   tx_ <- row_text(fy, d, ZA)
-  ti <- stri_replace_all_regex(lower(d$PROJECT_TITLE), rx(CV_EXC), " ")
-  tx <- stri_replace_all_regex(lower(paste0(tx_$a, " . ", tx_$p)), rx(CV_EXC), " ")
+  ti0 <- lower(d$PROJECT_TITLE); tx0 <- lower(paste0(tx_$a, " . ", tx_$p))
+  ti <- stri_replace_all_regex(ti0, rx(CV_EXC), " ")
+  tx <- stri_replace_all_regex(tx0, rx(CV_EXC), " ")
   tt <- paste0(ti, " ", tx)
+  # v10 rule (c): tumour-vessel / tumour-endothelium phrases also blanked
+  ti10 <- stri_replace_all_regex(ti0, rx(V10_CV_EXC), " ")
+  tx10 <- stri_replace_all_regex(tx0, rx(V10_CV_EXC), " ")
+  tt0 <- paste0(ti0, " ", tx0)
   o <- data.table(FY = fy, APPLICATION_ID = d$APPLICATION_ID, FULL_PROJECT_NUM = d$FULL_PROJECT_NUM,
                   ts = n_match(ti, CV_STR), tw = n_match(ti, CV_WEAK), s = n_match(tx, CV_STR), w = n_match(tx, CV_WEAK),
                   tws = n_match(ti, CV_WT), wp = n_match(tt, CV_WP), wm = n_match(tt, CV_WM), wsx = n_match(tt, CV_WS),
                   ww = n_match(tt, CV_WW), ntext = nchar(tx),
+                  ts10 = n_match(ti10, CV_STR), tw10 = n_match(ti10, CV_WEAK), s10 = n_match(tx10, CV_STR), w10 = n_match(tx10, CV_WEAK),
+                  canc = n_match(tt0, V10_CANCER), t_canc = has_match(ti0, V10_CANCER),
+                  heme = n_match(tt0, V10_HEME), t_heme = has_match(ti0, V10_HEME), t_hemecv = has_match(ti0, V10_HEME_CV_TITLE),
+                  ctox = n_match(tt0, V10_CARDIOTOX), t_ctox = has_match(ti0, V10_CARDIOTOX),
                   SUB = !is.na(d$SUBPROJECT_ID),                                  # component row
                   TC = { v <- suppressWarnings(as.numeric(d$TOTAL_COST)); v[is.na(v)] <- 0; v },
                   Z = tx_$z)
@@ -246,13 +260,7 @@ cv_year_features <- function(fy) {
   sprintf("%d: %s NIH rows", fy, format(nrow(o), big.mark = ","))
 }
 
-cv_tiers <- function(F) {
-  F[, strict := ts >= 1 | s >= 5]
-  F[, broad2 := strict | s >= 3 | (s >= 2 & w >= 2) | (tw >= 1 & s >= 1) | (tw >= 1 & w >= 6) | (s >= 1 & w >= 5)]
-  core <- F$strict | (F$broad2 & F$wp >= 2)
-  F[, wcv3 := core & (tws >= 1 | wp >= 2 | wsx >= 2 | (wm >= 2 & ww >= 2) | ww >= 6)]
-  F[]
-}
+cv_tiers <- v10_cv_tiers   # v10 rules (c) and (e); identical to the v9 tiers when switched off
 
 for (m in pmap_years(CONFIG$years, cv_year_features)) say(m)
 F <- cv_tiers(rbindlist(lapply(CONFIG$years, function(y) readRDS(work_path("cv", sprintf("feat_%d.rds", y))))))
@@ -261,7 +269,8 @@ F[, `:=`(cv = broad2, cvs = strict, wcv = wcv3, par = !SUB)]
 F_rows <- F[, .(FY, cv, cvs, TC)]                                 # row-level totals use every NIH row
 F <- F[!is.na(FULL_PROJECT_NUM)]                                  # project-level: rows without a project number are dropped
 F[, use := par | !any(par), by = .(FY, FULL_PROJECT_NUM)]         # parent rows; all rows if no parent
-G <- F[use == TRUE, .(cv = any(cv), cvs = any(cvs), wcv = any(wcv)), by = .(FY, FULL_PROJECT_NUM)]
+G <- F[use == TRUE, .(cv = any(cv), cvs = any(cvs), wcv = any(wcv), cv9 = any(broad9), tumvasc = any(tumvasc & broad9), heme_ctx = any(heme_ctx & broad9),
+                       ctox_hit = any(ctox_hit)), by = .(FY, FULL_PROJECT_NUM)]
 G <- merge(G, Xk, by = c("FY", "FULL_PROJECT_NUM"), all.x = TRUE, sort = FALSE)
 for (c in c("base", "t3", "tnc")) set(G, i = which(is.na(G[[c]])), j = c, value = FALSE)   # not in WHR universe
 saveRDS(G, work_path("cv", "G.rds"))

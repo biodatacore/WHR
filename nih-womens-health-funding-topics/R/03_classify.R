@@ -187,6 +187,9 @@ yearly <- function(X, zrows) {
   list(Y = Y, rate = rate)
 }
 
+# v10: the rule-switch versions in R/v10.R replace the three functions above (CHANGE_LOG.md).
+features <- v10_features; assign_tiers <- v10_assign_tiers; yearly <- v10_yearly
+
 # ======================================================================================
 # A. WHR tiers
 # ======================================================================================
@@ -197,6 +200,8 @@ yy <- yearly(X, zrows)
 saveRDS(X, work_path("whr", "tiers.rds"))
 saveRDS(yy$Y, work_path("whr", "yearly.rds"))
 saveRDS(yy$rate, work_path("whr", "imputation_rates.rds"))
+saveRDS(yy$rate_obs, work_path("whr", "imputation_rates_observed.rds"))   # v10: sensitivity rate (v9 method)
+say("v10 rule switches on: ", paste(V10, collapse = ","))
 say("intramural imputation rates (%): ", paste(names(yy$rate), round(100 * yy$rate, 2), collapse = ", "))
 print(yy$Y[, .(FY, nih_B = round(nih_B, 3), v3_n, v3_B = round(v3_B, 3), v3_pct = round(v3_pct, 3),
                strict = round(strict_sexdiff_pct, 3), nasem_comp = round(nasem_comp_pct, 3))])

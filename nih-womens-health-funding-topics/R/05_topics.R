@@ -15,8 +15,10 @@
 #'             FY2023-2025 (decomposition);
 #'           * exclusion sensitivities: the NHLBI 3M/IMPROVE award alone, and all key large
 #'             awards (National Children's Study, ECHO, WHI, NRG Oncology, HPTN LOC, NCI pooled
-#'             contracts, 3M/IMPROVE). Award dollars are removed from the topic and WHR totals;
-#'             the NIH denominator is unchanged;
+#'             contracts, 3M/IMPROVE). Under v10 (excl) those award dollars leave the topic
+#'             and WHR totals and the NIH denominator. The main estimate keeps every award,
+#'             including OT2HL158287 at full project cost. Set WHR_V10_RULES without "excl"
+#'             to leave the denominator unchanged;
 #'           * OLS trends of each share on FY with Newey-West SEs (lags 1, 2), FY2013-2025 (main)
 #'             and FY2013-2026.
 #' CAVEAT    Topic results are indicative: matches were spot-checked, not manually coded.
@@ -92,11 +94,32 @@ DG_W <- dec(fg, WT, "TOTAL", WT); DS_W <- dec(fs, WT, "TOTAL", WT)
 excl_w <- function(mask) yv(D[!mask, .(sum(USD)), keyby = FY]) + IMP
 w3 <- excl_w(m3); wk <- excl_w(mk)
 fg3 <- alloc(GC, !m3); fgk <- alloc(GC, !mk); fs3 <- alloc(SC, !m3); fsk <- alloc(SC, !mk)
-DX3 <- dec(fg3, NIH, "TOTAL WHR excl. 3M (% of NIH)", w3); DXK <- dec(fgk, NIH, "TOTAL WHR excl. all key awards (% of NIH)", wk)
+# v10 (excl): the excluded awards are removed from the NIH denominator as well. The award
+# definitions are applied to EVERY NIH project (WHR or not), so award dollars leave the
+# denominator even where a component was not classified WHR. The pre-v10 feature cache has
+# no CORE_PROJECT_NUM; the sensitivity then cannot be computed and stops.
+if (!"CORE_PROJECT_NUM" %in% names(X)) {
+  if (v10_on("excl")) {
+    stop("WHR feature table has no CORE_PROJECT_NUM, so excluded awards cannot be removed from the NIH denominator. ",
+         "Rebuild features from raw project text with WHR_REBUILD=1. See README.md.")
+  }
+  NIH3 <- NIH; NIHK <- NIH
+  KEYTAB <- data.table(key_award = character(), FY = integer(), projects = integer(), USD_M = numeric(),
+                       WHR_projects = integer(), WHR_USD_M = numeric())
+} else {
+  XA <- X[, .(FY, FULL_PROJECT_NUM, USD, CORE_PROJECT_NUM, title_l = lower(title))]
+  XA[, key_award := ""]; for (k in names(KEY)) XA[KEY[[k]](XA) & key_award == "", key_award := k]
+  NIH3 <- NIH - yv(XA[CORE_PROJECT_NUM %in% "OT2HL158287", .(sum(USD)), keyby = FY])
+  NIHK <- NIH - yv(XA[key_award != "", .(sum(USD)), keyby = FY])
+  if (!v10_on("excl")) { NIH3 <- NIH; NIHK <- NIH }
+  KEYTAB <- XA[key_award != "", .(projects = .N, USD_M = sum(USD) / 1e6), keyby = .(key_award, FY)]
+  KEYTAB <- merge(KEYTAB, D[key_award != "", .(WHR_projects = .N, WHR_USD_M = sum(USD) / 1e6), keyby = .(key_award, FY)], all.x = TRUE)
+}
+DX3 <- dec(fg3, NIH3, "TOTAL WHR excl. 3M (% of NIH)", w3); DXK <- dec(fgk, NIHK, "TOTAL WHR excl. all key awards (% of NIH)", wk)
 
 # ---- trends -----------------------------------------------------------------------------------
 TR <- rbindlist(lapply(list(list("frac", fg, fs, NIH, "% of NIH"), list("frac", fg, fs, WT, "% of WHR"),
-                            list("frac excl. 3M", fg3, fs3, NIH, "% of NIH"), list("frac excl. key awards", fgk, fsk, NIH, "% of NIH")), function(b)
+                            list("frac excl. 3M", fg3, fs3, NIH3, "% of NIH"), list("frac excl. key awards", fgk, fsk, NIHK, "% of NIH")), function(b)
   rbindlist(lapply(c(GC, SUB), function(t) { s <- 100 * (if (t %in% GC) b[[2]][, t] else b[[3]][, t]) / b[[4]]
     rbindlist(lapply(list(c(2013, 2025), c(2013, 2026)), function(yy) rbindlist(lapply(1:2, function(lag) {
       k <- Y0 >= yy[1] & Y0 <= yy[2]; r <- nw_trend(s[k], Y0[k], lag)
@@ -105,19 +128,33 @@ TR <- rbindlist(lapply(list(list("frac", fg, fs, NIH, "% of NIH"), list("frac", 
   }))))
 
 # ---- predominant vs profound categories (Figure 2 and the categorization paragraph) ----------
-#' Following the NASEM 2024 condition matrix (A New Vision for Women's Health Research, Table 7-1):
+#' Condition categories. With the topics switch on (the v10 default), autoimmune disease is
+#' profound and osteoporosis is predominant, matching NASEM Table 7-1 and Chapter 3. The scheme
+#' is still adapted from NASEM where it differs: the 2x3 DALY matrix is collapsed to two
+#' categories plus a cross-cutting group; thyroid disease, chronic pain and urinary conditions
+#' are predominant; diabetes/obesity is added as profound.
 #'   PREDOMINANT = conditions affecting women exclusively or mostly (female-specific, maternal,
-#'                 female cancers, female-predominant conditions);
-#'   PROFOUND    = conditions with a large share of women's morbidity/mortality burden.
+#'                 female cancers, female-predominant conditions, osteoporosis when topics is on);
+#'   PROFOUND    = conditions with a large share of women's morbidity/mortality burden
+#'                 (autoimmune disease when topics is on).
 #' "Cardiovascular / metabolic in women" is split into CVD and diabetes/obesity with the same
-#' rule (title hit, or >= 2 hits in the text). Dollars are split equally across matched
-#' categories (category series) or matched subtopics (subtopic series).
+#' rule (title hit, or >= 2 hits in the text). Category dollars and subtopic dollars are
+#' separate equal splits of the full project-year cost. Each level sums to the WHR total;
+#' the two levels are not additive.
 CAT_NEW <- list(`Cardiovascular disease` = r"(cardiovascular|heart disease|heart failure|hypertension|stroke|coronary|cardiac|atheroscler|cardiomyopath|myocardial|arrhythmi|atrial fibrillation|cardiometabolic)",
                 `Diabetes / obesity` = r"(diabetes|diabetic|obesity|obese|insulin resistance)")
 for (s in names(CAT_NEW)) set(D, j = s, value = has_match(D$title_l, CAT_NEW[[s]]) | n_match(D$text, CAT_NEW[[s]]) >= 2)
 PRED <- c(WHR_TOPICS[group %in% c("1 Female-specific conditions", "2 Maternal / pregnancy health", "3 Female cancers")]$subtopic,
           "Autoimmune (lupus, RA, MS, Sjogren, scleroderma)", "Thyroid", "Migraine / chronic pain / fibromyalgia", "Urinary incontinence / UTI")
 PROF <- c("Cardiovascular disease", "Alzheimer's / dementia / cognitive aging", "Depression / anxiety / PTSD / eating disorders", "Osteoporosis / bone", "Diabetes / obesity")
+# v10 (topics): realigned to the NASEM source scheme. NASEM Table 7-1 places autoimmune disorders
+# among conditions that differentially or disproportionately affect women through disability AND
+# early mortality (-> profound); NASEM Ch. 3 lists osteoporosis with conditions that predominantly
+# affect women (-> predominant).
+if (v10_on("topics")) {
+  PRED <- c(setdiff(PRED, "Autoimmune (lupus, RA, MS, Sjogren, scleroderma)"), "Osteoporosis / bone")
+  PROF <- c(setdiff(PROF, "Osteoporosis / bone"), "Autoimmune (lupus, RA, MS, Sjogren, scleroderma)")
+}
 CROSS <- c("Sex-differences biology", "Women's cohorts (WHI, Nurses' Health)", "HIV / STIs in women", "Substance use / alcohol / tobacco",
            "Intimate partner violence / sexual assault", "Health equity / social determinants in women")
 CATS <- list(Predominant = PRED, Profound = PROF, `Cross-cutting` = CROSS)
@@ -136,11 +173,14 @@ CT <- rbindlist(lapply(c(names(CATS), "Unclassified", PRED, PROF, CROSS), functi
       Topic = t, Denominator = d[[1]], pct_2013_15 = pool(v, d[[2]], A), pct_2023_25 = pool(v, d[[2]], B),
       slope_pts_per_yr = r$slope, CI_lo = r$ci_low, CI_hi = r$ci_high, p = r$p) })) }))
 rnd <- function(x, d = 4) { x <- copy(x); for (j in names(x)) if (is.numeric(x[[j]])) set(x, j = j, value = round(x[[j]], d)); x }
-saveRDS(list(fg = fg, fs = fs, NIH = NIH, WT = WT, fcat = fcat, fcs = fcs, PRED = PRED, PROF = PROF), work_path("topics", "whr_topics.rds"))
+saveRDS(list(fg = fg, fs = fs, NIH = NIH, WT = WT, fcat = fcat, fcs = fcs, PRED = PRED, PROF = PROF, NIHK = NIHK, NIH3 = NIH3, wk = wk, w3 = w3,
+             D = D[, c("FY", "FULL_PROJECT_NUM", "CORE_PROJECT_NUM", "USD", "key_award", SUB, GRP, WHR_OTHER, PRED, PROF, CROSS, names(CATS), "Unclassified"), with = FALSE]),
+        work_path("topics", "whr_topics.rds"))
 openxlsx::write.xlsx(list(Scheme = rbindlist(lapply(names(CATS), function(k) data.table(Category = k, Subtopic = CATS[[k]]))), Summary = rnd(CT)),
                      out_path("whr_categories_predominant_profound.xlsx"))
 openxlsx::write.xlsx(list(Dictionary = WHR_TOPICS, Totals = rnd(data.table(FY = Y0, WHR_B = WT / 1e9, NIH_B = NIH / 1e9, WHR_pct_NIH = 100 * WT / NIH,
-  imputed_B = IMP / 1e9, WHR_excl_3M_pct = 100 * w3 / NIH, WHR_excl_key_pct = 100 * wk / NIH)),
+  imputed_B = IMP / 1e9, WHR_excl_3M_pct = 100 * w3 / NIH3, WHR_excl_key_pct = 100 * wk / NIHK, NIH_excl_3M_B = NIH3 / 1e9, NIH_excl_key_B = NIHK / 1e9)),
+  Key_awards = rnd(KEYTAB),
   Decomp_groups_NIH = rnd(DG_N), Decomp_subtopics_NIH = rnd(DS_N), Decomp_groups_WHR = rnd(DG_W), Decomp_subtopics_WHR = rnd(DS_W),
   Decomp_groups_excl_3M = rnd(DX3), Decomp_groups_excl_key = rnd(DXK), Trends = rnd(TR)), out_path("whr_topic_trends.xlsx"))
 
@@ -181,5 +221,22 @@ add("cvd_whr_1315", ct("Cardiovascular disease", "% of WHR", "pct_2013_15")); ad
 add("cvd_whr_trend", ct("Cardiovascular disease", "% of WHR", "slope_pts_per_yr")); add("cvd_whr_trend_lo", ct("Cardiovascular disease", "% of WHR", "CI_lo")); add("cvd_whr_trend_hi", ct("Cardiovascular disease", "% of WHR", "CI_hi"))
 cva <- anyc("Cardiovascular disease"); add("cvd_any_whr_1315", pool(cva, WT, A)); add("cvd_any_whr_2325", pool(cva, WT, B))
 add("alz_cat_whr_1315", ct("Alzheimer's / dementia / cognitive aging", "% of WHR", "pct_2013_15")); add("alz_cat_whr_2325", ct("Alzheimer's / dementia / cognitive aging", "% of WHR", "pct_2023_25"))
+# v10 additions
+ro <- readRDS(work_path("whr", "imputation_rates_observed.rds"))[["t3"]]
+IMPS <- yv(X[notext == TRUE, .(sum(USD) * ro), keyby = FY])
+add("imp_rate_observed_pct", 100 * ro); add("imp_sens_added_musd", sum(IMPS) / 1e6); add("imp_notext_musd", sum(yv(X[notext == TRUE, .(sum(USD)), keyby = FY])) / 1e6)
+add("imp_notext_n", nrow(X[notext == TRUE]))
+add("pooled_imp_sens_2325", 100 * (sum(WT[B]) - sum(IMP[B]) + sum(IMPS[B])) / sum(NIH[B]))
+for (yy in c(2020, 2024)) { add(sprintf("v3_pct_%d", yy), V[FY == yy]$v3_pct); add(sprintf("v3_pct_imp_%d", yy), V[FY == yy]$v3_pct_imp) }
+for (yy in Y0) add(sprintf("v3_pct_%d", yy), V[FY == yy]$v3_pct)
+add("pooled_excl3m_1315", dv(DX3, "TOTAL WHR excl. 3M (% of NIH)", "pct_2013_15")); add("pooled_excl3m_2325", dv(DX3, "TOTAL WHR excl. 3M (% of NIH)", "pct_2023_25"))
+add("nasemcomp_pct_min_v", min(V$nasem_comp_pct)); add("mean_diff_vs_nasem_1323", mean(V[FY <= 2023]$v3_pct - V[FY <= 2023]$NASEM))
+add("mean_diff_nasemcomp_vs_nasem_1323", mean(V[FY <= 2023]$nasem_comp_pct - V[FY <= 2023]$NASEM))
+for (t in c("Predominant", "Profound", "Cross-cutting", "Unclassified")) { add(paste0("cat_whr_1315_", t), ct(t, "% of WHR", "pct_2013_15")); add(paste0("cat_whr_2325_", t), ct(t, "% of WHR", "pct_2023_25"))
+  add(paste0("cat_nih_1315_", t), ct(t, "% of NIH", "pct_2013_15")); add(paste0("cat_nih_2325_", t), ct(t, "% of NIH", "pct_2023_25")) }
+add("cat_pred_whr_trend", ct("Predominant", "% of WHR", "slope_pts_per_yr")); add("cat_pred_whr_trend_lo", ct("Predominant", "% of WHR", "CI_lo")); add("cat_pred_whr_trend_hi", ct("Predominant", "% of WHR", "CI_hi"))
+r <- tr("frac", "% of NIH", "2 Maternal / pregnancy health"); add("maternal_trend", r$slope_pts_per_yr)
+for (g in GC) add(paste0("grp_change_", substr(g, 1, 1)), dv(DG_N, g, "change_pts"))
+for (g in GC) { add(paste0("grp_1315_", substr(g, 1, 1)), dv(DG_N, g, "pct_2013_15")); add(paste0("grp_2325_", substr(g, 1, 1)), dv(DG_N, g, "pct_2023_25")) }
 fwrite(rbindlist(kn), out_path("key_numbers_topics.csv"))
 print(rnd(DG_N, 3)); print(rnd(DXK, 3))

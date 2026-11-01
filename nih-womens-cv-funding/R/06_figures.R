@@ -49,15 +49,15 @@ bars(R$FY, R$CV_proj_B, R$`Partial tier v3 B`, R$`Partial tier v3 pct_B`, 5, 1, 
 
 # ---- Figure 2: topic small multiples ------------------------------------------------------------
 T <- readRDS(work_path("topics", "cv_topics.rds")); y <- CONFIG$years
-A <- 100 * T$frac / T$CVT; X <- 100 * T$frac_x / T$CVT
-panels <- list(c("Lifestyle, obesity & social determinants in women", "Lifestyle, obesity & social determinants"),
+A <- 100 * T$frac / T$CVT; X <- 100 * T$frac_x / T$CVTX   # v10: award removed from numerator and denominator
+panels <- list(c("Lifestyle, obesity & social determinants in women", "Lifestyle, obesity, social determinants"),
   c("Hypertensive disorders of pregnancy", "Hypertensive disorders of pregnancy"),
   c("Maternal mortality / severe maternal morbidity", "Maternal mortality / severe morbidity"),
-  c("Sex differences / female-specific mechanisms", "Sex differences / female-specific mechanisms"),
+  c("Sex differences / female-specific mechanisms", "Sex differences / female-specific"),
   c("Offspring / developmental programming & perinatal", "Offspring / developmental & perinatal"),
   c("Other / general women's CV", "Other / general women's CV"),
   c("Menopause / sex hormones & CVD", "Menopause / sex hormones"),
-  c("Placental / maternal-fetal vascular biology", "Placental / maternal-fetal vascular biology"))
+  c("Placental / maternal-fetal vascular biology", "Placental / maternal-fetal vascular"))
 L <- list()
 for (i in seq_along(panels)) {
   t <- panels[[i]][1]; lab <- sprintf("%s. %s", letters[i], panels[[i]][2])
@@ -67,7 +67,7 @@ for (i in seq_along(panels)) {
 for (x in list(c("Coronary microvascular dysfunction / INOCA / MINOCA", "CMD/INOCA/MINOCA"), c("Peripartum cardiomyopathy", "PPCM"),
                c("SCAD", "SCAD"), c("Takotsubo / stress cardiomyopathy", "Takotsubo")))
   L[[length(L) + 1]] <- data.table(panel = "i. Specific conditions", FY = y, v = A[, x[1]], s = x[2], row = 3)
-for (x in list(c("Menopause / sex hormones & CVD", "j. Menopause / sex hormones (women's CV)"),
+for (x in list(c("Menopause / sex hormones & CVD", "j. Menopause / hormones (women's CV)"),
                c("Placental / maternal-fetal vascular biology", "k. Placental / fetal vascular (women's CV)")))
   L[[length(L) + 1]] <- data.table(panel = x[2], FY = y, v = T$WSH[, x[1]], s = "all", row = 4)
 for (x in list(c("PCOS", "PCOS"), c("Gestational diabetes & CV risk", "Gestational diabetes"), c("Takotsubo / stress cardiomyopathy", "Takotsubo ")))
@@ -75,7 +75,7 @@ for (x in list(c("PCOS", "PCOS"), c("Gestational diabetes & CV risk", "Gestation
 d <- rbindlist(L); d[, panel := factor(panel, levels = unique(panel))]
 main <- d[s == "all"]; grey <- d[!s %in% c("all", "excl")]
 p <- ggplot() +
-  geom_line(aes(FY, v), data = main[FY <= INC - 1], linewidth = 0.5) +
+  geom_line(aes(FY, v), data = main[FY <= INC - 1], linewidth = 0.7) +
   geom_line(aes(FY, v), data = main[FY >= INC - 1], linewidth = 0.5, linetype = "dotted") +
   geom_line(aes(FY, v), data = d[s == "excl"], colour = RED, linewidth = 0.4, linetype = "dashed") +
   geom_line(aes(FY, v, linetype = s), data = grey, colour = "grey35", linewidth = 0.4) +
@@ -85,8 +85,8 @@ p <- ggplot() +
   scale_x_continuous(breaks = c(2013, 2017, 2021, 2025)) + scale_y_continuous(limits = c(0, NA)) +
   labs(x = NULL, y = "% of NIH CV funding (rows 1-3); % of women's CV funding (row 4)",
        caption = paste0("Fractional allocation (project dollars split across matched topics). Dotted segment: FY2026 (incomplete).\n",
-                        "Bottom row: share of women's CV funding. Red dashed: excluding NHLBI Maternal Morbidity & Mortality (3M/IMPROVE) award OT2HL158287.")) +
-  theme_min(8) + theme(strip.background = element_blank(), strip.text = element_text(hjust = 0, size = 8),
-                       legend.position = "bottom", plot.caption = element_text(hjust = 0, size = 6.5, colour = "grey30"))
-save_fig(p, "Figure2", 7.5, 8.4)
+                        "Bottom row: share of women's CV funding.\nRed dashed: excluding the NHLBI 3M/IMPROVE award OT2HL158287 from numerator and denominator.")) +
+  theme_min(11) + theme(strip.background = element_blank(), strip.text = element_text(hjust = 0, size = 10.5),
+                       legend.position = "bottom", plot.caption = element_text(hjust = 0, size = 9, colour = "grey30"))
+save_fig(p, "Figure2", 10, 11.5)
 say("figures written to ", CONFIG$out_dir)

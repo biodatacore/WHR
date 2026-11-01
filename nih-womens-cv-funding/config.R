@@ -17,7 +17,8 @@ CONFIG <- list(
   work_dir = Sys.getenv("WHR_WORK_DIR", "data/work"),   # intermediate .rds files (~6 GB)
   out_dir  = Sys.getenv("WHR_OUT_DIR",  "outputs"),     # tables, figures, verification report
 
-  # ---- fiscal years (S1). FY2026 was retrieved on 2026-10-20 and is INCOMPLETE ------------
+  # ---- fiscal years (S1). FY2026 is INCOMPLETE. v10 estimates use the 2026-10-31 RePORTER
+  #      freeze. data/shipped still holds the 2026-10-20 extract. ---------------------------
   years           = 2013:2026,
   committee_years = 2013:2023,   # years with committee workbooks (and committee labels)
   exporter_years  = 2024:2025,   # ExPORTER CSV years

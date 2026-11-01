@@ -13,7 +13,10 @@
 #' ANALYSES  * pooled dollar-weighted topic share of ALL broad-CV funding, FY2013-2015 vs
 #'             FY2023-2025, and each topic's contribution to the change;
 #'           * the same excluding the NHLBI Maternal Morbidity & Mortality (3M)/IMPROVE
-#'             coordinating award (core project OT2HL158287);
+#'             coordinating award (core project OT2HL158287). Under v10 (excl) the award
+#'             leaves the women's-CV numerator and the CV denominator. The main estimate
+#'             keeps OT2HL158287 at full project cost. A second sensitivity drops all seven
+#'             key award groups from both the numerator and the CV denominator;
 #'           * OLS trends of topic share of CV funding on FY with Newey-West SEs (lags 1, 2),
 #'             FY2013-2025 (main) and FY2013-2026;
 #'           * topic share of women's CV funding by year (bottom row of Figure 2).
@@ -69,13 +72,13 @@ Yt <- rbindlist(lapply(TA, function(t) data.table(Topic = t, FY = Y0, Projects =
   pct_of_CV_any = 100 * anyd[, t] / CVT, pct_of_CV_frac = 100 * frac[, t] / CVT)))
 
 # ---- decomposition: pooled dollar-weighted share of all CV funding ---------------------------
-pooled <- function(M, yrs) 100 * colSums(M[as.character(yrs), , drop = FALSE]) / sum(CVT[as.character(yrs)])
-decomp <- function(M, wt, total_name) {
-  R <- data.table(Topic = colnames(M), pct_of_CV_2013_15 = pooled(M, A), pct_of_CV_2023_25 = pooled(M, B))
+pooled <- function(M, yrs, den = CVT) 100 * colSums(M[as.character(yrs), , drop = FALSE]) / sum(den[as.character(yrs)])
+decomp <- function(M, wt, total_name, den = CVT) {
+  R <- data.table(Topic = colnames(M), pct_of_CV_2013_15 = pooled(M, A, den), pct_of_CV_2023_25 = pooled(M, B, den))
   R[, change_pts := pct_of_CV_2023_25 - pct_of_CV_2013_15]
   setorder(R, -change_pts)
-  tot <- data.table(Topic = total_name, pct_of_CV_2013_15 = 100 * sum(wt[as.character(A)]) / sum(CVT[as.character(A)]),
-                    pct_of_CV_2023_25 = 100 * sum(wt[as.character(B)]) / sum(CVT[as.character(B)]))
+  tot <- data.table(Topic = total_name, pct_of_CV_2013_15 = 100 * sum(wt[as.character(A)]) / sum(den[as.character(A)]),
+                    pct_of_CV_2023_25 = 100 * sum(wt[as.character(B)]) / sum(den[as.character(B)]))
   tot[, change_pts := pct_of_CV_2023_25 - pct_of_CV_2013_15]
   R[, share_of_total_change_pct := 100 * change_pts / sum(change_pts)]
   rbind(R, tot, fill = TRUE)
@@ -83,7 +86,29 @@ decomp <- function(M, wt, total_name) {
 DEC <- decomp(frac, WT, "TOTAL (women's CV share)")
 m3 <- !is.na(D$CORE_PROJECT_NUM) & D$CORE_PROJECT_NUM == "OT2HL158287"     # 3M / IMPROVE coordinating award
 frac_x <- alloc(D[!m3]); WX <- WT - tapply(D$USD[m3], factor(D$FY[m3], levels = Y0), sum, default = 0)
-DX <- decomp(frac_x, WX, "TOTAL excl. 3M")
+# v10 (excl): the award also leaves the CV denominator (all broad-CV rows of OT2HL158287)
+Gc <- merge(G[cv == TRUE, .(FY, FULL_PROJECT_NUM, USD)], unique(P[, .(FY, FULL_PROJECT_NUM, CORE_PROJECT_NUM, title_l = lower(PROJECT_TITLE))]),
+            by = c("FY", "FULL_PROJECT_NUM"), all.x = TRUE)
+yv0 <- function(dt) { v <- setNames(numeric(length(Y0)), Y0); if (nrow(dt)) v[as.character(dt[[1]])] <- dt[[2]]; v }
+CV3 <- yv0(Gc[CORE_PROJECT_NUM %in% "OT2HL158287", .(sum(USD)), keyby = FY])
+CVTX <- if (v10_on("excl")) CVT - CV3 else CVT
+DX <- decomp(frac_x, WX, "TOTAL excl. 3M", CVTX)
+# v10 (excl): all seven key award groups of the WHR analysis, removed from numerator and denominator
+KEY <- list(`NHLBI 3M / IMPROVE coordinating award (OT2HL158287)` = function(d) d$CORE_PROJECT_NUM %in% "OT2HL158287",
+  `National Children's Study contracts` = function(d) has_match(d$title_l, "national children.s study"),
+  `ECHO cohorts` = function(d) has_match(d$title_l, r"(\becho\b|environmental influences on child)"),
+  `Women's Health Initiative contracts/cohorts` = function(d) has_match(d$title_l, r"(women.s health initiative|\bwhi\b)"),
+  `NRG Oncology network` = function(d) has_match(d$title_l, "nrg oncology"),
+  `HIV Prevention Trials Network LOC (UM1AI068619)` = function(d) d$CORE_PROJECT_NUM %in% "UM1AI068619",
+  `NCI pooled contracts N01CO/N01CA000000` = function(d) d$CORE_PROJECT_NUM %in% c("N01CO000000", "N01CA000000"))
+Gc[, key_award := ""]; for (k in names(KEY)) Gc[KEY[[k]](Gc) & key_award == "", key_award := k]
+D[, key_award := ""]; for (k in names(KEY)) D[KEY[[k]](D) & key_award == "", key_award := k]
+mk <- D$key_award != ""
+frac_k <- alloc(D[!mk]); WK <- WT - tapply(D$USD[mk], factor(D$FY[mk], levels = Y0), sum, default = 0)
+CVTK <- CVT - yv0(Gc[key_award != "", .(sum(USD)), keyby = FY])
+DK <- decomp(frac_k, WK, "TOTAL excl. all key awards", CVTK)
+KEYTAB <- merge(Gc[key_award != "", .(CV_projects = .N, CV_USD_M = sum(USD) / 1e6), keyby = .(key_award, FY)],
+                D[key_award != "", .(WCV_projects = .N, WCV_USD_M = sum(USD) / 1e6), keyby = .(key_award, FY)], all = TRUE)
 M3 <- D[m3, .(USD_M = sum(USD) / 1e6), keyby = FY]
 M3[, `:=`(pct_of_CV = 100 * USD_M * 1e6 / CVT[as.character(FY)], pct_of_WCV = 100 * USD_M * 1e6 / WT[as.character(FY)])]
 
@@ -103,12 +128,14 @@ TR <- rbindlist(TR)
 WSH <- 100 * frac / WT
 
 saveRDS(list(D = D[, c("FY", "FULL_PROJECT_NUM", "CORE_PROJECT_NUM", "USD", TA, "n_topics"), with = FALSE],
-             frac = frac, frac_x = frac_x, CVT = CVT, WT = WT, WSH = WSH, DEC = DEC, DX = DX, TR = TR),
+             frac = frac, frac_x = frac_x, CVT = CVT, CVTX = CVTX, CVTK = CVTK, WX = WX, WK = WK, WT = WT, WSH = WSH, DEC = DEC, DX = DX, DK = DK, TR = TR),
         work_path("topics", "cv_topics.rds"))
 rnd <- function(x, d = 4) { x <- copy(x); for (j in names(x)) if (is.numeric(x[[j]])) set(x, j = j, value = round(x[[j]], d)); x }
 openxlsx::write.xlsx(list(Dictionary = data.table(Topic = TP, Regex = unname(CV_TOPICS),
                                                   Rule = ifelse(TP %in% CV_TOPICS_ONE, ">=1 hit anywhere", "title hit, or >=2 hits in text")),
-                          Yearly = rnd(Yt), Decomposition = rnd(DEC), Decomp_excl_3M = rnd(DX), `3M_IMPROVE_award` = rnd(M3), Trends = rnd(TR)),
+                          Yearly = rnd(Yt), Decomposition = rnd(DEC), Decomp_excl_3M = rnd(DX), Decomp_excl_key = rnd(DK), Key_awards = rnd(KEYTAB), `3M_IMPROVE_award` = rnd(M3),
+                          Excl_series = rnd(data.table(FY = Y0, CV_B = CVT / 1e9, WCV_pct = 100 * WT / CVT, CV_excl3M_B = CVTX / 1e9, WCV_excl3M_pct = 100 * WX / CVTX,
+                                                       CV_exclkey_B = CVTK / 1e9, WCV_exclkey_pct = 100 * WK / CVTK)), Trends = rnd(TR)),
                      out_path("topic_trends_cv.xlsx"))
 
 # ---- key numbers quoted in the report --------------------------------------------------------
@@ -137,6 +164,15 @@ add("menopause_share_wcv_2013", WSH["2013", "Menopause / sex hormones & CVD"]); 
 add("placental_share_wcv_2013", WSH["2013", "Placental / maternal-fetal vascular biology"]); add("placental_share_wcv_2025", WSH["2025", "Placental / maternal-fetal vascular biology"])
 tp <- function(t) TR[Basis == "frac" & Topic == t & Years == "2013-2025" & NW_lag == 1]
 add("trend_menopause_p", tp("Menopause / sex hormones & CVD")$p); add("trend_placental_p", tp("Placental / maternal-fetal vascular biology")$p)
+# v10 additions
+add("m3_cv_den_2325_musd", sum(CV3[as.character(B)]) / 1e6)
+add("wcv_exclkey_pooled_1315", dv(DK, "TOTAL excl. all key awards", "pct_of_CV_2013_15")); add("wcv_exclkey_pooled_2325", dv(DK, "TOTAL excl. all key awards", "pct_of_CV_2023_25"))
+for (x in list(c("lifestyle", "Lifestyle, obesity & social determinants in women"), c("matmort", "Maternal mortality / severe maternal morbidity"),
+               c("sexdiff", "Sex differences / female-specific mechanisms"), c("hdp", "Hypertensive disorders of pregnancy"))) add(paste0("dec_", x[1], "_share_of_gain"), dv(DEC, x[2], "share_of_total_change_pct"))
+add("m3_share_of_gain_pct", 100 * (dv(DEC, "TOTAL (women's CV share)", "change_pts") - dv(DX, "TOTAL excl. 3M", "change_pts")) / dv(DEC, "TOTAL (women's CV share)", "change_pts"))
+add("takotsubo_usd_2013_2016", sum(frac[as.character(2013:2016), "Takotsubo / stress cardiomyopathy"]))
+for (t in TA) add(paste0("dec_change_", gsub("[^a-z]", "", tolower(t))), dv(DEC, t, "change_pts"))
+add("cmd_share_wcv_2013", WSH["2013", "Coronary microvascular dysfunction / INOCA / MINOCA"])
 fwrite(rbindlist(kn), out_path("key_numbers_topics.csv"))
 print(rnd(DEC[, .(Topic, pct_of_CV_2013_15, pct_of_CV_2023_25, change_pts)], 3))
 print(rnd(DX[, .(Topic, change_pts)], 3)[1:6])

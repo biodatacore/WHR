@@ -1,6 +1,6 @@
 # Replication data
 
-These files let anyone reproduce every number, table and figure of the accompanying report from this repository alone:
+These files are the pre-v10 replication extract (FY2026 retrieved 2026-10-20). With `WHR_V10_RULES=none` they reproduce the previous pipeline. They do not contain the v10 feature columns or the 2026-10-31 FY2026 refresh, so they do not reproduce the v10 estimates in `tests/expected_values.csv`.
 
 ```sh
 git clone https://github.com/biodatacore/WHR
@@ -8,14 +8,14 @@ cd <this repository folder>
 Rscript R/run_all.R        # uses data/shipped/ automatically when data/raw/ does not exist
 ```
 
-`R/02_load_shipped.R` checks every file against `data/shipped/MD5SUMS`, converts the files into the intermediate files the pipeline expects (in `data/work/`, or `WHR_WORK_DIR`), and the remaining steps (classification tiers, statistics, topics, figures and `07_verify.R`) then run unchanged.
+`R/02_load_shipped.R` checks every file against `data/shipped/MD5SUMS` and converts the files into the intermediate files the pipeline expects (in `data/work/`, or `WHR_WORK_DIR`). With `WHR_V10_RULES=none` the remaining steps run on these files. The default v10 rules stop, because the feature columns they need are not in this extract.
 
 ## Source and terms
 
 * All grant records are public NIH RePORTER / ExPORTER data (titles, abstracts, public health narratives, project numbers, administering Institute/Center, activity code, total cost). NIH RePORTER data are in the public domain; please cite NIH RePORTER (https://reporter.nih.gov) and follow its terms of use (https://reporter.nih.gov/faqs).
 * **No investigator, contact or organization fields are included**: no PI names or IDs, emails, phone numbers, organization names/addresses, program officers or study sections. Abstract text is reproduced as published by NIH and may occasionally mention a person's name within the text itself.
 * No committee working files, committee relevance labels or other committee-derived annotations are included. The classification thresholds in `R/terms.R` were fixed in advance (calibrated offline); no step of the pipeline needs, or reads, external labels.
-* FY2026 was retrieved from the RePORTER API v2 on 2026-10-20 and is **incomplete**; FY2020 and FY2024 intramural abstracts were filled from the API on the same date. RePORTER revises records daily, so a fresh download will differ slightly from these files.
+* FY2026 in these files was retrieved from the RePORTER API v2 on 2026-10-20 and is **incomplete**; FY2020 and FY2024 intramural abstracts were filled from the API on the same date. The v10 estimates use a later freeze, 2026-10-31 (69,809 FY2026 records). RePORTER revises records daily, so a fresh download will differ from both.
 
 ## Size
 
@@ -41,7 +41,7 @@ The analytic file: every NIH-administered project-year with its funding and the 
 
 ### `shipped/text/whr_text_{FY}.csv.gz` (one row per WHR project-year)
 
-Title and pooled text for every project-year in the main WHR tier (71,784 project-years), the universe of the topic and category analyses (`R/05_topics.R`). Text for non-WHR projects is not needed for any reported result and is not shipped (see *Rebuilding from the raw NIH files*).
+Title and pooled text for every project-year in the pre-v10 main WHR tier (71,784 project-years). The v10 main tier is larger (76,374 project-years with text) because female-predominant conditions and breast cancer add projects whose text is not in this extract. Text for projects outside this file is not shipped (see *Rebuilding from the raw NIH files*).
 
 | column | content |
 |---|---|
@@ -52,7 +52,7 @@ Title and pooled text for every project-year in the main WHR tier (71,784 projec
 
 ### `shipped/universe/intramural_no_text.csv`
 
-FY2020 and FY2024 intramural projects for which neither the bulk files nor the API had an abstract (47 project-years); their dollars are allocated at the intramural tier rate (S5.7). Columns `FY`, `FULL_PROJECT_NUM`.
+FY2020 and FY2024 intramural projects for which neither the bulk files nor the API had an abstract (47 project-years, mostly ZIF). Under v10 their dollars are imputed at 0% WHR in the main series; the observed intramural rate (6.53% under the previous rules, 7.29% under the v10 rules) is the sensitivity. Columns `FY`, `FULL_PROJECT_NUM`.
 
 ### `shipped/cv_features/cv_row_features_{FY}.csv.gz` (one row per NIH record)
 
@@ -82,7 +82,7 @@ WHR_WORK_DIR=/path/to/rebuild Rscript R/run_all.R --raw
 WHR_WORK_DIR=/path/to/rebuild Rscript R/compare_to_shipped.R   # per-FY record counts, dollars and feature disagreements
 ```
 
-FY2013-2023 records in the original analysis came from a grant workbook compiled from ExPORTER that is not public; the same fiscal years are available from ExPORTER (<https://reporter.nih.gov/exporter>), but current ExPORTER records have been revised since, so a rebuild from them will match closely but not exactly. FY2026 re-downloaded from the API will differ because the year was incomplete on 2026-10-20.
+FY2013-2023 records in the original analysis came from a grant workbook compiled from ExPORTER that is not public; the same fiscal years are available from ExPORTER (<https://reporter.nih.gov/exporter>), but current ExPORTER records have been revised since, so a rebuild from them will match closely but not exactly. FY2026 re-downloaded from the API will differ from both the 2026-10-20 extract in these files and the 2026-10-31 freeze used for the v10 estimates, because the year is incomplete.
 
 ## Checksums
 

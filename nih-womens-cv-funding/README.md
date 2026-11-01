@@ -1,8 +1,6 @@
 # Temporal Trends in NIH Funding for Women's Cardiovascular Health Research: reproduction code (R)
 
-Annotated R code that reproduces every number and both figures of the accompanying brief report
-
-> Cheng S, Sun N, Geller A, Wei J, Bairey Merz CN. Temporal Trends in NIH Funding for Women's Cardiovascular Health Research. [Journal] [forthcoming].
+Annotated R code (pipeline v10) that reproduces the numbers and figures of the accompanying brief report on NIH funding for women's cardiovascular health research. The v10 estimates use the RePORTER data freeze of 2026-10-31. Changes from the previous pipeline are in [`../CHANGE_LOG.md`](../CHANGE_LOG.md).
 
 Repository: https://github.com/biodatacore/WHR
 
@@ -19,26 +17,26 @@ The paper uses plain-language definitions; the code keeps short internal names. 
 | internal name in code | meaning in the paper |
 |---|---|
 | `Partial tier v3`, `t3`, `v3_*` (the *main* WHR definition) | **women's health research (WHR)**: keyword rules applied to the grant title, abstract and public health narrative indicate women's health as a primary or substantial focus |
-| `Strict + sex differences`, `base` | narrower WHR definition (female-specific plus substantive sex-differences research), used as a bound |
-| `NASEM-comparable`, `tnc` | broader WHR definition closest to the NASEM committee's labels, used as a bound |
+| `Strict + sex differences`, `base` | narrower WHR definition (female-specific plus substantive sex-differences research), a definitional sensitivity analysis |
+| `NASEM-comparable`, `tnc` | broader WHR definition closest to the NASEM committee's labels, a definitional sensitivity analysis |
 | `CV_tier == "broad"`, `broad2`, `cv` | **cardiovascular (CV) research**: a CV term in the title or repeated CV terms in the text, excluding non-CV usages |
 | `strict` CV | narrower CV definition (sensitivity only) |
 | `wcv` | women's CV research = CV research that also meets the WHR definition |
 
-Earlier rule sets (`v1`, `v2`) are nested inside `v3` and are kept only because `v3` is built from them.
+Earlier rule sets (`v1`, `v2`) are nested inside `v3` and are kept only because `v3` is built from them. The strict and NASEM-comparable definitions are sensitivity analyses of the definition of WHR. They are not lower and upper bounds on dollars spent. Set `WHR_V10_RULES=none` to turn off every v10 rule and recover the previous classification logic.
 
 
 ## What the pipeline does
 
 | step | script | what it does | methods ref. |
 |---|---|---|---|
-| 0 | `R/00_setup.R` | checks packages, loads `config.R`, keyword dictionaries (`R/terms.R`) and helpers (`R/utils.R`) | – |
+| 0 | `R/00_setup.R` | checks packages, loads `config.R`, keyword dictionaries (`R/terms.R`), helpers (`R/utils.R`) and the v10 rule switches (`R/v10.R`) | – |
 | 1 | `R/01_download.R` | optional RePORTER API v2 download (FY2026, intramural abstracts); builds FY2026 CSVs from the saved JSON | S2 |
 | 1b | `R/01b_mortality.R` | women's age-adjusted CV mortality 2013–2024 (CDC WONDER): uses the shipped public table, or re-queries WONDER with `--fetch` | – |
 | 2 | `R/02_build.R` | reads raw rows; one record per project per fiscal year with dollars and pooled text | S2–S4 |
 | 3 | `R/03_classify.R` | rule-based women's health research (WHR) definitions (see *Terminology*); cardiovascular (CV) and women's-CV rules; project-level CV × WHR table; yearly shares with intramural imputation | S5, S9 |
 | 4 | `R/04_analysis.R` | trend statistics: OLS with Newey–West SEs, joinpoint-style segmented regression, clustered grant-level logistic regression, CV × year interaction, two-proportion z tests with FDR | S11 |
-| 5 | `R/05_topics.R` | multi-label topic tagging (`R/topics_cv.R`), decomposition FY2013–15 vs FY2023–25, large-award exclusions, topic trends | – |
+| 5 | `R/05_topics.R` | multi-label topic tagging (`R/topics_cv.R`), decomposition FY2013–15 vs FY2023–25, large-award exclusions (numerator and denominator), topic trends | – |
 | 6 | `R/06_figures.R` | Figure 1 and Figure 2 (ggplot2) | S10 |
 | 6b | `R/06b_figure1_mortality.R` | Figure 1 as published: funding bars plus women's CV mortality on a second y-axis (`sec_axis`); mortality trend tests | – |
 | 7 | `R/07_verify.R` | compares every reported number with `tests/expected_values.csv` and prints PASS/FAIL | – |
@@ -50,21 +48,31 @@ the project title, abstract and public health relevance text); no language model
 
 These are the detailed methods referred to in the paper's Methods section.
 
-**Data sources and project records.** Grant records for FY2013–FY2023 came from the project-level workbooks that the NASEM committee assembled from NIH ExPORTER; FY2024–FY2025 records came from the NIH ExPORTER Projects and Abstracts files, and FY2026 records from the RePORTER API (version 2), retrieved October 20, 2026. Intramural abstracts absent from the FY2020 and FY2024 bulk files were retrieved through the same API. Only projects administered by an NIH Institute or Center were analyzed. Because a multicomponent award appears as a parent record plus component records whose costs are already contained in the parent's total cost, records were collapsed to 1 per full project number per fiscal year, valued at the parent award's total cost or, when no parent record existed, the summed component costs. Dollars are nominal.
+**Data sources and project records.** Grant records for FY2013–FY2023 came from the project-level workbooks that the NASEM committee assembled from NIH ExPORTER; FY2024–FY2025 records came from the NIH ExPORTER Projects and Abstracts files, and FY2026 records from the RePORTER API (version 2). The v10 estimates use the freeze of 31 October 2026 (69,809 FY2026 records, $37.65 billion). FY2026 is still incomplete and still contains no intramural projects. Intramural abstracts absent from the FY2020 and FY2024 bulk files were retrieved through the same API. A re-query on that date still found no abstract for 47 intramural project-years (FY2020 n=24, FY2024 n=23), mostly ZIF facility and administrative awards. Only projects administered by an NIH Institute or Center were analyzed. The files in `data/shipped/` are an earlier extract (FY2026 retrieved 20 October 2026) and do not by themselves reproduce the v10 estimates.
 
-**Identifying women's health research (WHR).** WHR rules are nested, so each broader rule set keeps every project of the narrower one and adds projects matched by further terms. The rule set used throughout captures grants in which women's health is a primary or substantial (partial) focus and covers female-specific, maternal, female-predominant, and reproductive conditions; cancers that include female cancers; HIV and sexually transmitted infections in women; female-population terms; and substantive sex-differences research after boilerplate sex-as-a-biological-variable statements are filtered out. Rule thresholds were tuned on the committee's FY2013–2017 grant labels and checked on its FY2018–2023 labels with dollar-weighted precision and recall. The committee generated those labels with GPT-4o (OpenAI); they were used only for tuning and evaluation, and the classifier itself uses regular-expression rules and no language model.
+**Full-project funding attribution.** A project that meets a definition contributes its entire project-year cost. Because a multicomponent award appears as a parent record plus component records whose costs are already contained in the parent's total cost, records were collapsed to one per full project number per fiscal year, valued at the parent award's total cost or, when no parent record existed, the summed component costs. Dollars are nominal. The pipeline does not assign a fraction of a project to WHR. Topic splits, below, divide that full project-year cost among matched topics.
 
-**Identifying cardiovascular (CV) research.** CV relevance is scored on each parent and component record, not on pooled project text, because components of large center awards can describe unrelated science. A record qualifies as CV research when CV is a substantive part of it, shown by a CV term in the title or repeated CV terms in the text; terms that do not denote CV research (eg, tumor angiogenesis, heart rate variability, intracranial or portal hypertension, heat stroke) are excluded. Random-sample review showed about 84% precision. Women's CV research is CV funding that also meets the WHR definition.
+**Identifying women's health research (WHR).** WHR rules are nested, so each broader rule set keeps every project of the narrower one and adds projects matched by further terms. The rule set used throughout captures grants in which women's health is a primary or substantial (partial) focus and covers female-specific, maternal, female-predominant, and reproductive conditions; cancers that include female cancers; HIV and sexually transmitted infections in women; female-population terms; and substantive sex-differences research after boilerplate sex-as-a-biological-variable statements are filtered out. Rule thresholds were tuned on the committee's FY2013–2017 grant labels and checked on its FY2018–2023 labels with dollar-weighted precision and recall. The committee generated those labels with GPT-4o (OpenAI); they were used only for tuning and evaluation, and the classifier itself uses regular-expression rules and no language model. The strict-plus-sex-differences definition and the NASEM-comparable definition are definitional sensitivity analyses. They are not bounds on spending.
 
-**CV topic dictionary.** Women's CV projects are searched against a 20-topic dictionary spanning sex-specific CV risk (eg, hypertensive disorders of pregnancy, menopause and sex hormones, polycystic ovary syndrome, gestational diabetes), conditions that mainly affect women (coronary microvascular dysfunction and INOCA/MINOCA, peripartum cardiomyopathy, SCAD, takotsubo syndrome), and broader themes. A topic is assigned when one of its terms appears in the title or at least twice in the text (once for rare named conditions). Projects can carry several topics, and their dollars are split equally among them, so topic dollars sum to the women's CV total.
+v10 changes to that definition, on by default (`R/v10.R`; `WHR_V10_RULES`):
 
-**Statistical analysis.** Newey–West standard errors use a Bartlett kernel with 1 lag (2 lags as a check), no prewhitening, and no small-sample adjustment, with normal-theory 95% CIs. Grant-level logistic models use cluster-robust standard errors by core project. Yearly CV vs non-CV comparisons use 2-proportion z tests with Benjamini–Hochberg FDR adjustment. Sensitivity analyses exclude FY2026 and the NHLBI 3M/IMPROVE coordinating award (OT2HL158287). Mortality trends (CDC WONDER, women, age-adjusted to the 2000 US standard) use OLS with Newey–West SEs and log-linear APCs, with a sensitivity analysis omitting 2020–2022.
+* Pregnancy and maternal-fetal studies count as WHR only with maternal-outcome evidence: at least two maternal-outcome terms (maternal health, morbidity or mortality, pregnant women, postpartum, preeclampsia, gestational diabetes, preterm birth, pregnancy outcomes or complications, placenta, lactation, and related terms), or one such term in the title. Otherwise the project is classified without pregnancy terms.
+* Centre, training and network grants are no longer automatically downgraded when the project shows women's or maternal outcome evidence. The CV classifier never had a blanket centre exclusion, because CV status already requires CV terms on the scored row.
+* Breast cancer counts as WHR (a breast-cancer term in the title, or at least two mentions).
+* Female-predominant conditions on the NASEM list count as WHR when the condition is central (in the title, or at least three mentions), without a separate women or female mention. The list covers lupus, Sjögren's, rheumatoid arthritis, multiple sclerosis, systemic sclerosis, autoimmune thyroid disease, antiphospholipid syndrome, primary biliary cholangitis, osteoporosis, migraine, fibromyalgia, ME/CFS, temporomandibular disorders, irritable bowel syndrome, interstitial cystitis, vulvodynia, chronic pelvic pain, urinary incontinence, pelvic-floor disorders, urinary tract infection, eating disorders and lymphangioleiomyomatosis. Psoriasis, inflammatory bowel disease, celiac disease and type 1 diabetes are not included.
+* The 47 intramural project-years that still have no text are imputed at 0% WHR in the main series. A WHR call is not possible without text, and the CV analysis never imputed those dollars. The dollar-weighted intramural rate from the other years is kept as a sensitivity: 6.53% under the previous rules, and 7.29% (+$89.5 million) when re-estimated under the v10 rules.
+
+**Identifying cardiovascular (CV) research.** CV relevance is scored on each parent and component record, not on pooled project text, because components of large center awards can describe unrelated science. A record qualifies as CV research when CV is a substantive part of it, shown by a CV term in the title or repeated CV terms in the text; terms that do not denote CV research (eg, tumor angiogenesis, heart rate variability, intracranial or portal hypertension, heat stroke) are excluded. v10 also excludes tumour-vessel and tumour-endothelium phrases, cancer projects whose CV signal is only weak vascular language, and blood-disorder projects (sickle cell disease, thalassemia, thrombotic thrombocytopenic purpura, hemophilia, von Willebrand disease, coagulation or clotting factors, thrombocytopenia, anemia, hemostasis and related terms) unless the title names cardiac, pulmonary-hypertension, thrombotic or cerebrovascular disease. Any cardiotoxicity counts as CV (in the title, at least two mentions, or one mention plus at least two other strong CV terms) and overrides those exclusions. Random-sample review of the previous CV rule showed about 84% precision. Women's CV research is CV funding that also meets the WHR definition.
+
+**CV topic dictionary.** Women's CV projects are searched against a 20-topic dictionary spanning sex-specific CV risk (eg, hypertensive disorders of pregnancy, menopause and sex hormones, polycystic ovary syndrome, gestational diabetes), conditions that mainly affect women (coronary microvascular dysfunction and INOCA/MINOCA, peripartum cardiomyopathy, SCAD, takotsubo syndrome), and broader themes. A topic is assigned when one of its terms appears in the title or at least twice in the text (once for rare named conditions). Projects can carry several topics. The full project-year cost is split equally among the matched topics, so topic dollars sum to the women's CV total. That split is independent of the category split in the companion pipeline; the two levels are not additive.
+
+**Statistical analysis.** Newey–West standard errors use a Bartlett kernel with 1 lag (2 lags as a check), no prewhitening, and no small-sample adjustment, with normal-theory 95% CIs. Grant-level logistic models use cluster-robust standard errors by core project. Yearly CV vs non-CV comparisons use 2-proportion z tests with Benjamini–Hochberg FDR adjustment. Sensitivity analyses drop FY2026. A further sensitivity removes the NHLBI 3M/IMPROVE coordinating award (OT2HL158287) from the women's-CV numerator and from the CV denominator. The main estimate keeps that award at full cost. A second sensitivity removes seven award groups from both the numerator and the denominator: OT2HL158287, National Children's Study contracts, ECHO cohorts, Women's Health Initiative contracts and cohorts, the NRG Oncology network, the HIV Prevention Trials Network leadership award (UM1AI068619), and the NCI pooled contracts (N01CO000000 and N01CA000000). Mortality trends (CDC WONDER, women, age-adjusted to the 2000 US standard) use OLS with Newey–West SEs and log-linear APCs, with a sensitivity analysis omitting 2020–2022.
 
 **Software and code.** Analyses were run in Python 3.13 (pandas, statsmodels) and independently re-implemented in R 4.5.0 (data.table, stringi, sandwich, ggplot2, and other CRAN packages) in this repository, which also generates both figures. `R/07_verify.R` compares each reported value with its reproduction; the R code reproduced 126 of 131 checked values within tolerance, and the remaining 5 agreed at the precision reported. Raw NASEM committee workbooks are not redistributed.
 
 **Blinded manual validation.** Two study reviewers, blinded to any pre-assigned labels, each reviewed 100 grants and verified the accuracy of the automated labeling for WHR status, women's CV research status, and CV topic subtypes.
 
-**Figures.** Figure 1 (`Figure1_mortality`, as in the paper): grey bars for total NIH CV funding with overlaid red bars for women's CV research, red percentage labels (women's share of CV funding) drawn as plain text with no background box, FY2026 hatched, and women's age-adjusted CVD (solid) and heart disease (dashed) mortality on a right-hand axis. Figure 2: topic shares of CV and women's CV funding as small multiples.
+**Figures.** Figure 1 (`Figure1_mortality`, as in the paper): grey bars for total NIH CV funding with overlaid red bars for women's CV research, red percentage labels (women's share of CV funding) drawn as plain text with no background box, FY2026 hatched, and women's age-adjusted CVD (solid) and heart disease (dashed) mortality on a right-hand axis. Figure 2: topic shares of CV and women's CV funding as small multiples. The red dashed series drops OT2HL158287 from the numerator and from the CV denominator.
 
 ## Replication data (included)
 
@@ -89,9 +97,10 @@ zfix/api_z.json             FY2020/2024  intramural titles/abstracts (R/01_downl
 2. **FY2026 and intramural abstracts, RePORTER API v2** (public, no key):
    `Rscript R/01_download.R --fetch` queries <https://api.reporter.nih.gov/v2/projects/search>
    (needs the FY2020 and FY2024 files for the intramural step). The published analysis used
-   responses retrieved on 2026-10-20; FY2026 was incomplete and RePORTER revises records daily,
-   so a new download gives somewhat different FY2026 (and slightly different FY2020/2024)
-   numbers. Exact reproduction requires the saved 2026-10-20 responses: [DATA AVAILABILITY STATEMENT / ARCHIVE LINK].
+   responses retrieved on 2026-10-31 for the v10 estimates (69,809 FY2026 records); FY2026 was
+   incomplete and RePORTER revises records daily, so a new download gives somewhat different
+   FY2026 numbers. The extract in `data/shipped/` is the earlier 2026-10-20 download.
+   Exact reproduction of the v10 estimates requires the saved 2026-10-31 responses: [DATA AVAILABILITY STATEMENT / ARCHIVE LINK].
 3. **FY2013–2023, NASEM committee workbooks** (`AllData_{FY}.xlsx`): these are the grant-level
    files assembled by the National Academies committee for *A New Vision for Women's Health
    Research* (2025; doi:10.17226/28586). They contain investigator names and are **not public**;
@@ -136,8 +145,11 @@ Rscript -e 'install.packages(c("data.table","stringi","readxl","jsonlite","curl"
 # optional: point the pipeline at raw data / scratch space (or edit config.R)
 export WHR_RAW_DIR=/path/to/raw   WHR_WORK_DIR=/path/to/scratch   WHR_WORKERS=4
 
-Rscript R/run_all.R              # all steps + verification (shipped data unless data/raw exists)
-Rscript R/run_all.R --raw        # rebuild from raw NIH files (see Raw data)
+# data/shipped is the pre-v10 feature cache (FY2026 freeze 2026-10-20). The default
+# v10 rules stop in R/03_classify.R until features are rebuilt from raw text.
+Rscript R/run_all.R --raw        # v10 from raw NIH files, including the 2026-10-31 FY2026 JSON
+WHR_REBUILD=1 Rscript R/run_all.R --raw   # ignore an older feature cache in the work directory
+WHR_V10_RULES=none Rscript R/run_all.R    # previous rules on the shipped cache; does not match tests/expected_values.csv
 Rscript R/run_all.R --from 04    # re-run from a step (intermediate files are kept)
 Rscript R/07_verify.R            # re-check at any time
 ```
@@ -158,17 +170,15 @@ Intermediate files need about 6 GB of disk.
 | `Figure1_mortality.png/.pdf` | Figure 1 as published: CV funding bars with women's CV mortality (right axis; solid = all CVD, dashed = heart disease) |
 | `mortality_trends.csv`, `key_numbers_mortality.csv` | mortality trend tests (all windows, NW lags 1 and 2) and the reported mortality numbers |
 | `stats_results.xlsx` | OLS/Newey–West, segmented, grant-level logistic, CV × year interaction, z tests |
-| `topic_trends_cv.xlsx` | topic dictionary, yearly topic tables, decomposition (with/without 3M award), trends |
+| `topic_trends_cv.xlsx` | topic dictionary, yearly topic tables, decomposition, 3M exclusion and all-seven-award exclusion (numerator and denominator), key awards, trends |
 | `key_numbers_stats.csv`, `key_numbers_topics.csv` | the reported numbers (input to 07_verify.R) |
 | `verification_report.csv` | every reported number: expected value, reproduced value, difference, PASS/FAIL |
 
 ## Verification
 
-The shipped-data route (`Rscript R/run_all.R` on a fresh clone, no raw files) was tested end to end and produced outputs byte-identical to the raw-data route (all key-number CSVs, the verification report and the PNG figures).
+`tests/expected_values.csv` lists each checked number from the v10 analysis (RePORTER freeze 2026-10-31) with its full-precision value and an absolute tolerance (half a unit of the precision reported; counts and years exact). The committed `data/shipped/` feature tables are the pre-v10 cache. They do not contain the v10 feature columns (`cls_np`, `fpred`, `breast`, `wout`, and the CV columns `ts10`, `heme`, `ctox`) or the 2026-10-31 FY2026 refresh, so `Rscript R/run_all.R` on a fresh clone stops in `R/03_classify.R` until features are rebuilt from raw project text. `WHR_V10_RULES=none` runs the previous rules on that cache and will not match `tests/expected_values.csv`.
 
-`tests/expected_values.csv` lists each number quoted in the paper with its full-precision value
-from the original analysis and an absolute tolerance (half a unit of the precision reported;
-counts and years exact). On the original data this R port reproduced **126 of 131 checked values within tolerance (all 52 mortality values exactly); the 5 others still agree at the precision printed in the report (6,376 vs 6,378 project-years, because of a regex word-boundary difference between ICU and Python affecting 2 project-years; see Known differences)**.
+On the previous pipeline, this R port reproduced 126 of 131 checked values within tolerance (all 52 mortality values exactly). The other 5 agreed at the precision printed then (6,376 vs 6,378 women's-CV project-years), because of a regex word-boundary difference between ICU and Python affecting 2 project-years. The v10 expected count is 6,338 women's-CV project-years.
 
 Known, documented differences from the original (Python) implementation:
 * Regular expressions run on the ICU engine (stringi) instead of Python's `re`. Patterns are
@@ -194,4 +204,4 @@ the National Academies' terms.
 
 ## Known differences
 
-ICU (used by stringi) treats `\b` differently from Python's `re` when Unicode format characters such as soft hyphens appear next to words. On the original data, this changes term counts for 2 project-years. As a result, the R port finds 6,376 women's-CV project-years instead of 6,378. A few derived values move in the second decimal place: the FY2023 share (10.38% vs 10.39%), the segmented APCs (-6.36/11.03 vs -6.37/11.05), and the lifestyle share of the gain (30.7% vs 30.8%). `tests/expected_values.csv` keeps the published values, so `07_verify.R` reports these 5 as FAIL.
+ICU (used by stringi) treats `\b` differently from Python's `re` when Unicode format characters such as soft hyphens appear next to words. On the previous pipeline this changed term counts for 2 project-years (6,376 vs 6,378 women's-CV project-years). `tests/expected_values.csv` now stores the v10 R results, including 6,338 women's-CV project-years.

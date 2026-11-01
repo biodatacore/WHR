@@ -47,6 +47,12 @@ WHR_TOPICS <- data.table::rbindlist(list(
   list(group = "6 Violence / social determinants", subtopic = "Health equity / social determinants in women", pattern = r"---(health equity|disparit|social determinant|racism|discrimination|neighborhood|socioeconomic|rural women|underserved|minority women|black women|latina|hispanic women)---")
 ))
 
+# v11 (B): conditions added to the female-predominant list (R/v11.R) get their own subtopic in
+# group 4; with WHR_V11_RULES lacking B the subtopic is dropped and the v10 taxonomy is unchanged.
+WHR_V11_SUB <- "Other female-predominant (SCAD, PAH, POTS, GI, thyroid, pain, vascular)"
+if (v11_on("B")) WHR_TOPICS <- data.table::rbindlist(list(WHR_TOPICS, list(group = "4 Female-predominant conditions", subtopic = WHR_V11_SUB,
+  pattern = r"---(spontaneous coronary artery dissection|takotsubo|tako-tsubo|pulmonary arterial hypertension|postural (?:orthostatic )?tachycardia syndrome|autoimmune hepatitis|gallstone|cholelithiasis|microscopic colitis|collagenous colitis|lymphocytic colitis|idiopathic intracranial hypertension|pseudotumou?r cerebri|complex regional pain syndrome|raynaud|giant[- ]cell arteritis|polymyalgia rheumatica|lichen sclerosus|pelvic organ prolapse|myalgic encephalomyelitis|chronic fatigue syndrome)---")))
+
 #' Subtopics needing only one hit anywhere.
 WHR_SUB_ONE <- c("Endometriosis / adenomyosis", "Gestational diabetes", "Hypertensive disorders of pregnancy", "Intimate partner violence / sexual assault", "Ovarian cancer", "PCOS", "Uterine / endometrial cancer", "Uterine fibroids")
 WHR_OTHER <- "7 Other / general women's health"

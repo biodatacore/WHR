@@ -55,7 +55,7 @@ say("WHR project-years with text: ", nrow(D))
 
 # ---- tagging ------------------------------------------------------------------------------
 for (i in seq_len(nrow(WHR_TOPICS))) {
-  s <- WHR_TOPICS$subtopic[i]; need <- if (s %in% WHR_SUB_ONE) 1 else 2
+  s <- WHR_TOPICS$subtopic[i]; need <- v11_topic_need(if (s %in% WHR_SUB_ONE) 1L else 2L, s)   # v11 (Ct)
   set(D, j = s, value = has_match(D$title_l, WHR_TOPICS$pattern[i]) | n_match(D$text, WHR_TOPICS$pattern[i]) >= need)
 }
 for (g in GRP) set(D, j = g, value = rowSums(D[, WHR_TOPICS[group == g]$subtopic, with = FALSE]) > 0)
@@ -143,9 +143,10 @@ TR <- rbindlist(lapply(list(list("frac", fg, fs, NIH, "% of NIH"), list("frac", 
 #' the two levels are not additive.
 CAT_NEW <- list(`Cardiovascular disease` = r"(cardiovascular|heart disease|heart failure|hypertension|stroke|coronary|cardiac|atheroscler|cardiomyopath|myocardial|arrhythmi|atrial fibrillation|cardiometabolic)",
                 `Diabetes / obesity` = r"(diabetes|diabetic|obesity|obese|insulin resistance)")
-for (s in names(CAT_NEW)) set(D, j = s, value = has_match(D$title_l, CAT_NEW[[s]]) | n_match(D$text, CAT_NEW[[s]]) >= 2)
+for (s in names(CAT_NEW)) set(D, j = s, value = has_match(D$title_l, CAT_NEW[[s]]) | n_match(D$text, CAT_NEW[[s]]) >= v11_topic_need(2L, s))
 PRED <- c(WHR_TOPICS[group %in% c("1 Female-specific conditions", "2 Maternal / pregnancy health", "3 Female cancers")]$subtopic,
-          "Autoimmune (lupus, RA, MS, Sjogren, scleroderma)", "Thyroid", "Migraine / chronic pain / fibromyalgia", "Urinary incontinence / UTI")
+          "Autoimmune (lupus, RA, MS, Sjogren, scleroderma)", "Thyroid", "Migraine / chronic pain / fibromyalgia", "Urinary incontinence / UTI",
+          intersect(WHR_TOPICS$subtopic, WHR_V11_SUB))   # v11 (B): other female-predominant conditions
 PROF <- c("Cardiovascular disease", "Alzheimer's / dementia / cognitive aging", "Depression / anxiety / PTSD / eating disorders", "Osteoporosis / bone", "Diabetes / obesity")
 # v10 (topics): realigned to the NASEM source scheme. NASEM Table 7-1 places autoimmune disorders
 # among conditions that differentially or disproportionately affect women through disability AND

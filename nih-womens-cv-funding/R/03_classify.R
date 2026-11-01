@@ -192,7 +192,8 @@ yearly <- function(X, zrows) {
 }
 
 # v10: the rule-switch versions in R/v10.R replace the three functions above (CHANGE_LOG.md).
-features <- v10_features; assign_tiers <- v10_assign_tiers; yearly <- v10_yearly
+# v11: R/v11.R adds the v11 feature columns and rule switches on top of v10.
+features <- v11_features; assign_tiers <- v11_assign_tiers; yearly <- v10_yearly
 
 # ======================================================================================
 # A. WHR tiers
@@ -205,7 +206,7 @@ saveRDS(X, work_path("whr", "tiers.rds"))
 saveRDS(yy$Y, work_path("whr", "yearly.rds"))
 saveRDS(yy$rate, work_path("whr", "imputation_rates.rds"))
 saveRDS(yy$rate_obs, work_path("whr", "imputation_rates_observed.rds"))   # v10: sensitivity rate (v9 method)
-say("v10 rule switches on: ", paste(V10, collapse = ","))
+say("v10 rule switches on: ", paste(V10, collapse = ","), "; v11: ", paste(V11, collapse = ","))
 say("intramural imputation rates (%): ", paste(names(yy$rate), round(100 * yy$rate, 2), collapse = ", "))
 print(yy$Y[, .(FY, nih_B = round(nih_B, 3), v3_n, v3_B = round(v3_B, 3), v3_pct = round(v3_pct, 3),
                strict = round(strict_sexdiff_pct, 3), nasem_comp = round(nasem_comp_pct, 3))])
@@ -256,11 +257,12 @@ cv_year_features <- function(fy) {
                   SUB = !is.na(d$SUBPROJECT_ID),                                  # component row
                   TC = { v <- suppressWarnings(as.numeric(d$TOTAL_COST)); v[is.na(v)] <- 0; v },
                   Z = tx_$z)
+  o <- cbind(o, v11_cv_row_features(ti0, tx0))   # v11 (Cv): BBB / white-matter blanking, aim and background sentences
   saveRDS(o, work_path("cv", sprintf("feat_%d.rds", fy)))
   sprintf("%d: %s NIH rows", fy, format(nrow(o), big.mark = ","))
 }
 
-cv_tiers <- v10_cv_tiers   # v10 rules (c) and (e); identical to the v9 tiers when switched off
+cv_tiers <- v11_cv_tiers   # v10 rules (c) and (e) plus v11 (Cv); identical to v10 with WHR_V11_RULES=none
 
 for (m in pmap_years(CONFIG$years, cv_year_features)) say(m)
 F <- cv_tiers(rbindlist(lapply(CONFIG$years, function(y) readRDS(work_path("cv", sprintf("feat_%d.rds", y))))))

@@ -1,6 +1,6 @@
 # Temporal Trends in National Institutes of Health Funding for Women's Health Research, Fiscal Years 2013–2026: reproduction code (R)
 
-Annotated R code (pipeline v10) that reproduces the numbers and figures of the accompanying brief report on NIH funding for women's health research, fiscal years 2013–2026. The v10 estimates use the RePORTER data freeze of 2026-10-31. Changes from the previous pipeline are in [`../CHANGE_LOG.md`](../CHANGE_LOG.md).
+Annotated R code (pipeline v11) that reproduces the numbers and figures of the accompanying brief report on NIH funding for women's health research, fiscal years 2013–2026. The v10 estimates use the RePORTER data freeze of 2026-10-31. Changes from the previous pipeline are in [`../CHANGE_LOG.md`](../CHANGE_LOG.md).
 
 Repository: https://github.com/biodatacore/WHR
 
@@ -20,7 +20,7 @@ The paper uses plain-language definitions; the code keeps short internal names. 
 | `Strict + sex differences`, `base` | narrower WHR definition (female-specific plus substantive sex-differences research), a definitional sensitivity analysis |
 | `NASEM-comparable`, `tnc` | broader WHR definition closest to the NASEM committee's labels, a definitional sensitivity analysis |
 
-Earlier rule sets (`v1`, `v2`) are nested inside `v3` and are kept only because `v3` is built from them. The strict and NASEM-comparable definitions are sensitivity analyses of the definition of WHR. They are not lower and upper bounds on dollars spent. Set `WHR_V10_RULES=none` to turn off every v10 rule and recover the previous classification logic.
+Earlier rule sets (`v1`, `v2`) are nested inside `v3` and are kept only because `v3` is built from them. The strict and NASEM-comparable definitions are sensitivity analyses of the definition of WHR. They are not lower and upper bounds on dollars spent. Set `WHR_V11_RULES=none` to recover the v10 classification, and `WHR_V10_RULES=none WHR_V11_RULES=none` for the v9 logic.
 `Figure2_v3` is the output name of the current three-panel Figure 2 (predominant/profound layout); the suffix refers to the figure layout, not to the pipeline version.
 
 
@@ -44,7 +44,7 @@ the project title, abstract and public health relevance text); no language model
 
 These expand the paper's Methods and brief eMethods.
 
-**Grant records.** The analytic file combines 3 public-source extracts: NASEM committee grant workbooks built from NIH ExPORTER for FY2013–FY2023, ExPORTER Projects and Abstracts files for FY2024–FY2025, and RePORTER API (version 2) responses for FY2026. The v10 estimates use the freeze of 31 October 2026 (69,809 FY2026 records, $37.65 billion). FY2026 is still incomplete and still contains no intramural projects. The API also supplied intramural abstracts missing from the FY2020 and FY2024 bulk files. A re-query on that date still found no abstract for 47 intramural project-years (FY2020 n=24, FY2024 n=23), mostly ZIF facility and administrative awards. Only projects administered by an NIH Institute or Center are included. The files in `data/shipped/` are an earlier extract (FY2026 retrieved 20 October 2026) and do not by themselves reproduce the v10 estimates.
+**Grant records.** The analytic file combines 3 public-source extracts: NASEM committee grant workbooks built from NIH ExPORTER for FY2013–FY2023, ExPORTER Projects and Abstracts files for FY2024–FY2025, and RePORTER API (version 2) responses for FY2026. The v10 estimates use the freeze of 31 October 2026 (69,809 FY2026 records, $37.65 billion). FY2026 is still incomplete and still contains no intramural projects. The API also supplied intramural abstracts missing from the FY2020 and FY2024 bulk files. A re-query on that date still found no abstract for 47 intramural project-years (FY2020 n=24, FY2024 n=23), mostly ZIF facility and administrative awards. Only projects administered by an NIH Institute or Center are included. The files in `data/shipped/` are the v11 replication extract built from these inputs and reproduce the v11 estimates.
 
 **Full-project funding attribution.** A project that meets a definition contributes its entire project-year cost. To avoid double counting multicomponent awards, whose component costs are already included in the parent total, every full project number contributes a single record per fiscal year, using the parent's total cost or, when no parent exists, the sum of its subprojects. Amounts are nominal US dollars. The pipeline does not assign a fraction of a project to WHR.
 
@@ -57,6 +57,13 @@ v10 changes to that definition, on by default (`R/v10.R`; `WHR_V10_RULES`):
 * Breast cancer counts as WHR (a breast-cancer term in the title, or at least two mentions).
 * Female-predominant conditions on the NASEM list count as WHR when the condition is central (in the title, or at least three mentions), without a separate women or female mention. Psoriasis, inflammatory bowel disease, celiac disease and type 1 diabetes are not on that list.
 * The 47 intramural project-years that still have no text are imputed at 0% WHR in the main series. The dollar-weighted intramural rate from the other years is kept as a sensitivity: 6.53% under the previous rules, and 7.29% (+$89.5 million) when re-estimated under the v10 rules.
+
+
+v11 changes, on by default (`R/v11.R`; `WHR_V11_RULES`, `none` = v10 rules; every v10 rule above is kept):
+
+* **A. Tiered female-predominant criterion.** Each condition is counted separately (`docs/female_predominant_conditions.md`). Tier A conditions (female:male at least 2:1, or at least two-thirds women) count when central to the grant: at least two mentions of that condition, or a title hit (v10: at least three pooled mentions). Tier B conditions (about 1.5-2:1, or affecting women differently; irritable bowel syndrome and binge-eating disorder move here) count only with a women focus or substantive sex-differences research. Depression, anxiety, PTSD and Alzheimer's disease keep the women-focus requirement.
+* **B. New conditions.** Tier A: spontaneous coronary artery dissection, takotsubo syndrome, pulmonary arterial hypertension, POTS, autoimmune hepatitis, hypo- and hyperthyroidism, thyroid cancer, gallstones, microscopic colitis, idiopathic intracranial hypertension, complex regional pain syndrome, Raynaud phenomenon, giant cell arteritis / polymyalgia rheumatica, lichen sclerosus and pelvic organ prolapse. Tier B (women or sex-differences focus required): INOCA / coronary microvascular dysfunction, MINOCA, HFpEF and intimate partner violence. "Chronic fatigue" no longer counts in cancer or other-disease contexts, and urinary incontinence / pelvic floor terms do not count in post-prostatectomy or male contexts without a women focus. Generic "autoimmune", knee osteoarthritis, long COVID, hypermobile Ehlers-Danlos syndrome and borderline personality disorder are not added as stand-alone terms. A new subtopic in topic group 4 collects the added conditions.
+* **C. Precision.** (Cw) Pregnancy studies that use maternal exposures only to study offspring outcomes (offspring-outcome and maternal-exposure phrases, no maternal-outcome phrase) lose their maternal-outcome evidence; preclinical tool contexts (mouse mammary tumour virus, estrogen as an assay stimulus) do not count as breast-cancer or hormone evidence; centre, training and network grants need at least two women's or maternal outcome phrases, or one in the title. (Ct) The mixed-sex "profound" condition topics (cardiovascular disease, diabetes/obesity, Alzheimer's disease, depression/anxiety, osteoporosis, CV/metabolic in women) need a title hit or at least three mentions. (Cv, CV pipeline) A row is not broad CV when its strong CV terms occur only in background or future-application sentences, or when it has a single strong CV mention outside the title and the aims; blood-brain-barrier injury and white-matter lesions are not CV on their own.
 
 **Topics and condition categories.** A dictionary of 34 subtopics in 6 topic groups (plus a residual general category) is matched against the text of WHR grants (76,374 project-years with text under the v10 rules). Each subtopic requires a dictionary term in the title or at least 2 mentions in the text (1 for some specific conditions). A grant matching several subtopics has its full project-year dollars divided equally among those subtopics. Separately, a grant matching several condition categories has its dollars divided equally among those categories. The two allocations are independent: each sums to the WHR total, and category dollars are not the sum of the subtopic dollars inside them.
 
@@ -76,7 +83,7 @@ Subtopics are grouped by how a condition affects women. Autoimmune disease is pr
 
 ## Replication data (included)
 
-`data/shipped/` holds de-identified, compressed per-fiscal-year files derived from public NIH RePORTER records (FY2026 freeze 2026-10-31). It has an analytic file of every NIH project-year with the v10 classification features (869,672 project-years in the universe) and the title and text of every v10 women's health research project-year (76,374). The text supports the default v10 rules. `WHR_V10_RULES=none` may miss some topic text. With the default rules, `Rscript R/run_all.R` reproduces every reported number and figure without any raw files (about 10–15 min). No investigator names, contact details or committee-derived labels are included. Contents, column definitions, checksums and how to compare a rebuild from raw records are documented in [`data/README.md`](data/README.md). De-identified results of the blinded manual validation are in `data/validation/`.
+`data/shipped/` holds de-identified, compressed per-fiscal-year files derived from public NIH RePORTER records: an analytic file of every NIH project-year with funding and classification features, row-level cardiovascular term counts (where used), the title and text of every project-year in the main women's health research tier, and the project universe. With them, `Rscript R/run_all.R` reproduces every reported number and figure without any raw files (about 10–15 min). No investigator names, contact details or committee-derived labels are included. Contents, column definitions, checksums and how to compare a rebuild from raw records are documented in [`data/README.md`](data/README.md). De-identified results of the blinded manual validation are in `data/validation/`.
 
 ## Raw data (optional; not included in this repository)
 
@@ -99,8 +106,8 @@ zfix/api_z.json             FY2020/2024  intramural titles/abstracts (R/01_downl
    (needs the FY2020 and FY2024 files for the intramural step). The published analysis used
    responses retrieved on 2026-10-31 for the v10 estimates (69,809 FY2026 records); FY2026 was
    incomplete and RePORTER revises records daily, so a new download gives somewhat different
-   FY2026 numbers. `data/shipped/` is that 2026-10-31 extract.
-   Exact reproduction from raw files requires the saved 2026-10-31 responses: [DATA AVAILABILITY STATEMENT / ARCHIVE LINK].
+   FY2026 numbers. The extract in `data/shipped/` is the earlier 2026-10-20 download.
+   Exact reproduction of the v10 estimates requires the saved 2026-10-31 responses: [DATA AVAILABILITY STATEMENT / ARCHIVE LINK].
 3. **FY2013–2023, NASEM committee workbooks** (`AllData_{FY}.xlsx`): these are the grant-level
    files assembled by the National Academies committee for *A New Vision for Women's Health
    Research* (2025; doi:10.17226/28586). They contain investigator names and are **not public**;
@@ -121,11 +128,10 @@ Rscript -e 'install.packages(c("data.table","stringi","readxl","jsonlite","curl"
 # optional: point the pipeline at raw data / scratch space (or edit config.R)
 export WHR_RAW_DIR=/path/to/raw   WHR_WORK_DIR=/path/to/scratch   WHR_WORKERS=4
 
-# data/shipped is the v10 cache (FY2026 freeze 2026-10-31). Default rules:
-Rscript R/run_all.R              # shipped data unless data/raw exists; then verification
-Rscript R/run_all.R --raw        # rebuild from raw NIH files, including the 2026-10-31 FY2026 JSON
+# data/shipped (v11 cache) reproduces tests/expected_values.csv on a fresh clone
+Rscript R/run_all.R --raw        # v10 from raw NIH files, including the 2026-10-31 FY2026 JSON
 WHR_REBUILD=1 Rscript R/run_all.R --raw   # ignore an older feature cache in the work directory
-WHR_V10_RULES=none Rscript R/run_all.R    # previous rules; topic text may be missing and checks will not match
+WHR_V11_RULES=none Rscript R/run_all.R    # v10 rules on the shipped cache; does not match tests/expected_values.csv
 Rscript R/run_all.R --from 04    # re-run from a step (intermediate files are kept)
 Rscript R/07_verify.R            # re-check at any time
 ```
@@ -151,7 +157,7 @@ Intermediate files need about 6 GB of disk.
 
 ## Verification
 
-`tests/expected_values.csv` lists each checked number from the v10 analysis (RePORTER freeze 2026-10-31) with its full-precision value and an absolute tolerance (half a unit of the precision reported; counts and years exact). `Rscript R/run_all.R` on a fresh clone uses `data/shipped/` and checks those values. `WHR_V10_RULES=none` does not match them, and it may miss topic text.
+`tests/expected_values.csv` lists each checked number from the v10 analysis (RePORTER freeze 2026-10-31) with its full-precision value and an absolute tolerance (half a unit of the precision reported; counts and years exact). The committed `data/shipped/` tables are the v11 cache: `Rscript R/run_all.R` on a fresh clone reproduces every value in `tests/expected_values.csv`, and `WHR_V11_RULES=none` reproduces the v10 values.
 
 On the previous pipeline, this R port reproduced all 75 checked values within tolerance. The v10 main-tier count is 76,374 project-years with text. The shipped text files still cover the previous main tier (71,784 project-years).
 

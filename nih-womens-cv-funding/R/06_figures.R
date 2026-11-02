@@ -55,38 +55,38 @@ panels <- list(c("Lifestyle, obesity & social determinants in women", "Lifestyle
   c("Maternal mortality / severe maternal morbidity", "Maternal mortality / severe morbidity"),
   c("Sex differences / female-specific mechanisms", "Sex differences / female-specific"),
   c("Offspring / developmental programming & perinatal", "Offspring / developmental & perinatal"),
-  c("Other / general women's CV", "Other / general women's CV"),
+  c("Other / general women's CV", "Other / general women's cardiovascular"),
   c("Menopause / sex hormones & CVD", "Menopause / sex hormones"),
   c("Placental / maternal-fetal vascular biology", "Placental / maternal-fetal vascular"))
 L <- list()
 for (i in seq_along(panels)) {
-  t <- panels[[i]][1]; lab <- sprintf("%s. %s", letters[i], panels[[i]][2])
+  t <- panels[[i]][1]; lab <- sprintf("%s. %s", LETTERS[i], panels[[i]][2])
   L[[length(L) + 1]] <- data.table(panel = lab, FY = y, v = A[, t], s = "all", row = ceiling(i / 3))
   if (max(abs(A[, t] - X[, t])) > 1e-6) L[[length(L) + 1]] <- data.table(panel = lab, FY = y, v = X[, t], s = "excl", row = ceiling(i / 3))
 }
 for (x in list(c("Coronary microvascular dysfunction / INOCA / MINOCA", "CMD/INOCA/MINOCA"), c("Peripartum cardiomyopathy", "PPCM"),
                c("SCAD", "SCAD"), c("Takotsubo / stress cardiomyopathy", "Takotsubo")))
-  L[[length(L) + 1]] <- data.table(panel = "i. Specific conditions", FY = y, v = A[, x[1]], s = x[2], row = 3)
-for (x in list(c("Menopause / sex hormones & CVD", "j. Menopause / hormones (women's CV)"),
-               c("Placental / maternal-fetal vascular biology", "k. Placental / fetal vascular (women's CV)")))
+  L[[length(L) + 1]] <- data.table(panel = "I. Specific conditions", FY = y, v = A[, x[1]], s = x[2], row = 3)
+for (x in list(c("Menopause / sex hormones & CVD", "J. Menopause / hormones (women's cardiovascular)"),
+               c("Placental / maternal-fetal vascular biology", "K. Placental / fetal vascular (women's cardiovascular)")))
   L[[length(L) + 1]] <- data.table(panel = x[2], FY = y, v = T$WSH[, x[1]], s = "all", row = 4)
-for (x in list(c("PCOS", "PCOS"), c("Gestational diabetes & CV risk", "Gestational diabetes"), c("Takotsubo / stress cardiomyopathy", "Takotsubo ")))
-  L[[length(L) + 1]] <- data.table(panel = "l. Flat or declining (women's CV)", FY = y, v = T$WSH[, x[1]], s = x[2], row = 4)
+for (x in list(c("PCOS", "PCOS"), c("Gestational diabetes & CV risk", "Gestational diabetes"), c("Takotsubo / stress cardiomyopathy", "Takotsubo")))
+  L[[length(L) + 1]] <- data.table(panel = "L. Flat or declining (women's cardiovascular)", FY = y, v = T$WSH[, x[1]], s = x[2], row = 4)
 d <- rbindlist(L); d[, panel := factor(panel, levels = unique(panel))]
 main <- d[s == "all"]; grey <- d[!s %in% c("all", "excl")]
 p <- ggplot() +
   geom_line(aes(FY, v), data = main[FY <= INC - 1], linewidth = 0.7) +
   geom_line(aes(FY, v), data = main[FY >= INC - 1], linewidth = 0.5, linetype = "dotted") +
-  geom_line(aes(FY, v), data = d[s == "excl"], colour = RED, linewidth = 0.4, linetype = "dashed") +
+  geom_line(aes(FY, v), data = d[s == "excl"], colour = RED, linewidth = 0.5, linetype = "dashed") +
   geom_line(aes(FY, v, linetype = s), data = grey, colour = "grey35", linewidth = 0.4) +
   scale_linetype_manual(values = c(`CMD/INOCA/MINOCA` = "solid", PPCM = "dashed", SCAD = "dotted", Takotsubo = "dotdash",
-                                   PCOS = "solid", `Gestational diabetes` = "dashed", `Takotsubo ` = "dotdash"), name = NULL) +
-  facet_wrap(~panel, ncol = 3, scales = "free_y") +
+                                   PCOS = "solid", `Gestational diabetes` = "dashed"), name = NULL) +
+  facet_wrap(~panel, ncol = 3, scales = "free_y", labeller = label_wrap_gen(width = 30)) +
   scale_x_continuous(breaks = c(2013, 2017, 2021, 2025)) + scale_y_continuous(limits = c(0, NA)) +
-  labs(x = NULL, y = "% of NIH CV funding (rows 1-3); % of women's CV funding (row 4)",
+  labs(x = NULL, y = "% of NIH cardiovascular funding (rows 1\u20133); % of women's cardiovascular funding (row 4)",
        caption = paste0("Fractional allocation (project dollars split across matched topics). Dotted segment: FY2026 (incomplete).\n",
-                        "Bottom row: share of women's CV funding.\nRed dashed: excluding the NHLBI 3M/IMPROVE award OT2HL158287 from numerator and denominator.")) +
-  theme_min(11) + theme(strip.background = element_blank(), strip.text = element_text(hjust = 0, size = 10.5),
-                       legend.position = "bottom", plot.caption = element_text(hjust = 0, size = 9, colour = "grey30"))
+                        "Bottom row: share of women's cardiovascular funding.\nRed dashed: excluding the NHLBI 3M/IMPROVE award OT2HL158287 from numerator and denominator.")) +
+  theme_min(14) + theme(strip.background = element_blank(), strip.text = element_text(hjust = 0, size = 13.5, margin = margin(t = 6, r = 4, b = 9, l = 0)), legend.text = element_text(size = 13), legend.key.width = unit(1.2, "cm"),
+                       legend.position = "bottom", plot.caption = element_text(hjust = 0, size = 12, colour = "grey20"))
 save_fig(p, "Figure2", 10, 11.5)
 say("figures written to ", CONFIG$out_dir)

@@ -1,0 +1,25 @@
+INSTRUCTIONS FOR REVIEWERS
+Read each project's title and abstract on the Review tab. Answer from the text only. Do not look up the grant elsewhere.
+For each row, fill in: WHR (yes/no), CV (yes/no), CV-WHR (yes/no), a WHR category if WHR = yes (or "Not WHR"), and any comments. Use Comments for borderline calls.
+Rows are in random order. The pipeline's calls are hidden. Some rows were sampled more heavily than others on purpose, so do not infer anything from the mix.
+
+WOMEN'S HEALTH RESEARCH (WHR): count as yes if any of the rules below applies.
+1. Female-specific conditions and reproductive health (e.g., menopause, endometriosis, PCOS, contraception, gynecologic conditions).
+2. Pregnancy research counts only if it studies maternal outcomes (the pregnant person's health). Research only on offspring or fetal outcomes does not count.
+3. Female cancers count, including breast cancer (and ovarian, uterine, cervical cancers).
+4. Female-predominant conditions (conditions that mostly or disproportionately affect women, such as lupus, rheumatoid arthritis, multiple sclerosis, Sjogren's, scleroderma, autoimmune thyroid disease, osteoporosis, migraine, fibromyalgia, interstitial cystitis, urinary incontinence, SCAD, takotsubo):
+   - If the condition is named in the TITLE, it counts.
+   - If it is named only in the ABSTRACT, it counts only if the project is also women-focused (women named in the title, repeated focus on women in the abstract, or a substantive sex-differences aim).
+   - Studies of men only never qualify through this rule.
+5. Always count as WHR, regardless of women focus: irritable bowel syndrome (IBS), binge-eating disorder, INOCA (ischemia with no obstructive coronary arteries), MINOCA (MI with non-obstructive coronary arteries), and pulmonary arterial hypertension (PAH).
+6. Count only with a women or sex-differences focus: HFpEF, Alzheimer's disease/dementia, depression, anxiety, PTSD, and intimate partner violence (IPV).
+7. Research that substantively studies sex differences or conditions that affect women differently counts. Merely adjusting for sex, or enrolling both sexes, does not.
+8. Other women-focused research (e.g., women's cohorts, HIV/STI prevention in women, sexual violence, HPV vaccination) counts.
+
+CARDIOVASCULAR (CV): yes if the project's research is about the heart or blood vessels (e.g., coronary disease, heart failure, arrhythmia, hypertension, stroke and cerebrovascular disease, vascular biology).
+- Any cardiotoxicity counts as CV (e.g., cardiotoxicity from cancer therapy).
+- These alone do NOT count as CV: blood disorders (e.g., anemia, sickle cell, clotting factor disorders without vascular outcomes), tumor blood vessels / tumor angiogenesis, and blood-brain-barrier injury or white-matter lesions on their own.
+
+CV-WHR: yes only if the project is both CV = yes and WHR = yes.
+
+WHR CATEGORY: pick the single best fit from the dropdown, or "Not WHR".

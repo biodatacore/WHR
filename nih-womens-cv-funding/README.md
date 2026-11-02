@@ -1,6 +1,6 @@
 # Temporal Trends in NIH Funding for Women's Cardiovascular Health Research: reproduction code (R)
 
-Annotated R code (pipeline v11) that reproduces the numbers and figures of the accompanying brief report on NIH funding for women's cardiovascular health research. The v10 estimates use the RePORTER data freeze of 2026-10-31. Changes from the previous pipeline are in [`../CHANGE_LOG.md`](../CHANGE_LOG.md).
+Annotated R code (pipeline v11c) that reproduces the numbers and figures of the accompanying brief report on NIH funding for women's cardiovascular health research. The estimates use the RePORTER data freeze of 2026-10-31. Changes from the previous pipeline are in [`../CHANGE_LOG.md`](../CHANGE_LOG.md).
 
 Repository: https://github.com/biodatacore/WHR
 
@@ -9,6 +9,19 @@ The code works from publicly available NIH grant records. It estimates the share
 The code is a faithful R port of the analysis pipeline used for the paper. Section numbers in
 comments (S#.#) refer to internal methods sections; the full methods are given under *Detailed methods* below
 (the brief report has no supplement).
+
+
+## v11c results at a glance
+
+| | Value |
+|---|---|
+| Women's CV share of NIH CV funding, FY2013–15 / FY2023–25 (pooled, dollar-weighted) | 7.80% / 12.92% |
+| Women's CV project-years, FY2013–2026 | 7,712 |
+| Women's health research project-years (all NIH), FY2013–2026 | 74,124 |
+| Mortality, women aged <55 (age-adjusted per 100,000, 2013 → 2024) | all CVD 17.1 → 16.7; heart disease 12.6 → 12.0; no significant decline (see [`mortality_u55/`](mortality_u55/)) |
+| Validation, women's CV research (unweighted / weighted): sensitivity, specificity, κ | 97.6% / 69.3%, 84.5% / 99.9%, 0.80 / 0.75 (see [`../validation_v12/`](../validation_v12/)) |
+
+`Rscript R/run_all.R` on a fresh clone reproduces all 265 checked values in `tests/expected_values.csv` from `data/shipped/`; `Rscript mortality_u55/check_u55.R` checks the 32 under-55 mortality values in `tests/expected_values_u55.csv`.
 
 ## Terminology used in the code
 
@@ -78,9 +91,9 @@ v11 changes, on by default (`R/v11.R`; `WHR_V11_RULES`, `none` = v10 rules; ever
 
 **Software and code.** Analyses were run in Python 3.13 (pandas, statsmodels) and independently re-implemented in R 4.5.0 (data.table, stringi, sandwich, ggplot2, and other CRAN packages) in this repository, which also generates both figures. `R/07_verify.R` compares each reported value with its reproduction; the R code reproduced 126 of 131 checked values within tolerance, and the remaining 5 agreed at the precision reported. Raw NASEM committee workbooks are not redistributed.
 
-**Blinded manual validation.** Two study reviewers, blinded to any pre-assigned labels, each reviewed 100 grants and verified the accuracy of the automated labeling for WHR status, women's CV research status, and CV topic subtypes.
+**Blinded manual validation.** Earlier rounds: two study reviewers, blinded to any pre-assigned labels, each reviewed 100 grants and verified the accuracy of the automated labeling for WHR status, women's CV research status, and CV topic subtypes. Final (v12) round, out of sample for the frozen v11c rules: masked review of a new stratified random sample of 200 project-years, scored unweighted and weighted back to the portfolio (sampling weights N_h/n_h). Women's CV research: sensitivity 97.6% / 69.3% (weighted 95% CI 46.9%–100%), specificity 84.5% / 99.9%, κ 0.80 / 0.75 (unweighted / weighted). Design, de-identified item-level results and scoring code are in [`../validation_v12/`](../validation_v12/).
 
-**Figures.** Figure 1 (`Figure1_mortality`, as in the paper): grey bars for total NIH CV funding with overlaid red bars for women's CV research, red percentage labels (women's share of CV funding) drawn as plain text with no background box, FY2026 hatched, and women's age-adjusted CVD (solid) and heart disease (dashed) mortality on a right-hand axis. Figure 2: topic shares of CV and women's CV funding as small multiples. The red dashed series drops OT2HL158287 from the numerator and from the CV denominator.
+**Figures.** Figure 1 (`Figure1_mortality`, as in the paper): grey bars for total NIH CV funding with overlaid red bars for women's CV research, red percentage labels (women's share of CV funding) drawn as plain text with no background box, FY2026 hatched, and women's age-adjusted CVD (solid) and heart disease (dashed) mortality on a right-hand axis; panel B shows the same mortality series for women aged <55 (`mortality_u55/`). Figure 2: topic shares of CV and women's CV funding as small multiples (panels A–L). The red dashed series drops OT2HL158287 from the numerator and from the CV denominator.
 
 ## Replication data (included)
 
@@ -185,7 +198,7 @@ Intermediate files need about 6 GB of disk.
 
 `tests/expected_values.csv` lists each checked number from the v10 analysis (RePORTER freeze 2026-10-31) with its full-precision value and an absolute tolerance (half a unit of the precision reported; counts and years exact). The committed `data/shipped/` tables are the v11 cache: `Rscript R/run_all.R` on a fresh clone reproduces every value in `tests/expected_values.csv`, and `WHR_V11_RULES=none` reproduces the v10 values.
 
-On the previous pipeline, this R port reproduced 126 of 131 checked values within tolerance (all 52 mortality values exactly). The other 5 agreed at the precision printed then (6,376 vs 6,378 women's-CV project-years), because of a regex word-boundary difference between ICU and Python affecting 2 project-years. The v10 expected count is 6,338 women's-CV project-years.
+On the previous pipeline, this R port reproduced 126 of 131 checked values within tolerance (all 52 mortality values exactly). The other 5 agreed at the precision printed then (6,376 vs 6,378 women's-CV project-years), because of a regex word-boundary difference between ICU and Python affecting 2 project-years. The v10 expected count was 6,338 women's-CV project-years; v11c is 7,712.
 
 Known, documented differences from the original (Python) implementation:
 * Regular expressions run on the ICU engine (stringi) instead of Python's `re`. Patterns are

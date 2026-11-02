@@ -1,3 +1,36 @@
+# CHANGE_LOG — WHR pipelines v11 to v11c (2026-11-01)
+
+No new raw data: FY2013-2025 are unchanged and FY2026 is still the RePORTER freeze of 2026-10-31. `data/shipped/` was rebuilt as the v11c cache because the new rules need new keyword-count columns. Every v10 rule is kept; the v11 rules sit behind `WHR_V11_RULES` (`all` by default; `none` reproduces v10 exactly; `A,B,C` reproduces v11 without the v11b/v11c topic decisions). Full rule text and file-by-file changes are in each folder's `CHANGE_LOG_v11.md` and `docs/female_predominant_conditions.md`.
+
+## Rules
+
+* **v11 (A, B, Cw, Ct, Cv).** Tiered female-predominant criterion: a Tier A condition counts with a title hit, or with at least 2 mentions of the same condition plus a women focus (women in the title, at least 3 women mentions, or a sex-differences flag); men-only studies never qualify this way. New conditions (including INOCA/coronary microvascular dysfunction, MINOCA, IBS and binge-eating disorder) and women-focus-gated conditions (HFpEF, intimate partner violence). Precision fixes for offspring-only pregnancy studies, preclinical tool contexts, centre/training/network grants, profound topic thresholds, and background-only or isolated CV mentions (blood-brain-barrier injury and white-matter lesions alone are not CV).
+* **v11b (D1-D6).** D1 PAH (with pulmonary-hypertension context), IBS and binge-eating disorder count at one mention. D2 INOCA, MINOCA and coronary microvascular dysfunction count the same way (CV-WHR when the grant is CV). D3 fetal- or offspring-dominant grants are not WHR. D4 explicit sex-difference aims set the sex-differences flag ("sex as a biological variable" boilerplate does not). D5 men-only studies are never WHR. D6 women-only cohorts (WHI, Nurses' Health Study, SWAN, Women's Health Study, Sister Study, SOF, Black Women's Health Study, WHIMS, women-only enrollment) are always WHR.
+* **v11c (D3 softened).** A grant the D3 rule would drop is kept as WHR when it has at least 2 maternal-fetal protection terms (new column `mfprot`: preeclampsia/HDP, maternal-fetal medicine or network, MFMU, pregnancy complications, obstetric disease, pregnant women, ...) and those terms plus IUGR terms (`iugr`) outnumber birthweight/fetal-growth terms (`bw`). Grants with purely fetal or offspring outcomes are still excluded.
+
+## Results (pooled dollar-weighted shares)
+
+| | v10 | v11 | v11b | v11c |
+|---|---|---|---|---|
+| Total WHR, FY2013-15 | 9.38% | 8.74% | 8.97% | 9.02% |
+| Total WHR, FY2023-25 | 8.98% | 8.65% | 8.85% | 8.93% |
+| Total WHR trend FY2013-26, pp/yr (95% CI) | -0.006 (-0.079 to 0.067) | +0.022 (-0.047 to 0.092) | +0.015 (-0.053 to 0.083) | +0.017 (-0.049 to 0.083) |
+| Total WHR excl. OT2HL158287, FY2023-25 | 8.81% | 8.48% | 8.68% | 8.76% |
+| Women's CV share of CV, FY2013-15 | 6.19% | 5.50% | 7.70% | 7.80% |
+| Women's CV share of CV, FY2023-25 | 10.26% | 10.77% | 12.83% | 12.92% |
+| WHR project-years | 76,374 | 72,953 | 73,314 | 74,124 |
+| Women's CV project-years | 6,338 | – | – | 7,712 |
+
+## Added after v11c
+
+* **Mortality, women aged <55** (`nih-womens-cv-funding/mortality_u55/`): CDC WONDER queries (request and response XML), parsing, trend script, outputs and an offline check (`tests/expected_values_u55.csv`, 32 values). Figure 1B now shows women aged <55 (`R/06b_figure1_mortality.R` reads `inst/extdata/cdc_wonder_women_u55_mortality_2013_2024.csv`).
+* **Figures.** CV Figure 2 panels are labelled A-L and spell out "women's cardiovascular"; type sizes and line weights were increased for legibility. Total WHR figure code updated to the colour/hatching style of the reports. Figures generated from `data/shipped/` are byte-identical to those in the reports.
+* **v12 validation** (`validation_v12/`): two new out-of-sample stratified samples of 200 project-years each, scored unweighted and weighted to the portfolio (see that README).
+
+## Verification
+
+From a fresh clone with `data/shipped/` only (`Rscript R/run_all.R`): total WHR 84/84 and women's CV 265/265 expected values pass; `Rscript mortality_u55/check_u55.R` passes 32/32.
+
 # CHANGE_LOG — WHR pipelines v10 (data freeze 2026-10-31)
 
 Both pipelines (`nih-womens-cv-funding` and `nih-womens-health-funding-topics`) now use the v10 rules by default. Set `WHR_V10_RULES=none` to recover the previous classification logic. The switches live in `R/v10.R`.

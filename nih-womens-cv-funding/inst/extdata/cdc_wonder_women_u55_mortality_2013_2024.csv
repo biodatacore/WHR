@@ -1,0 +1,25 @@
+year,sex,ages,cause,icd10,age_adjusted_rate_per_100k,computed_check_unrounded,diff_check,deaths,population,crude_rate_per_100k,database,standard_population,status
+2013,Female,<55 (<1 to 45-54),all_cvd,I00-I99,17.1,17.0598,0.0,20507,115013428,17.8,D76,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2014,Female,<55 (<1 to 45-54),all_cvd,I00-I99,17.4,17.3559,0.0,20784,115272951,18.0,D76,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2015,Female,<55 (<1 to 45-54),all_cvd,I00-I99,17.6,17.5666,0.0,20984,115355816,18.2,D76,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2016,Female,<55 (<1 to 45-54),all_cvd,I00-I99,17.6,17.6512,0.1,20928,115133115,18.2,D76,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2017,Female,<55 (<1 to 45-54),all_cvd,I00-I99,17.2,17.1929,0.0,20308,115279209,17.6,D76,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2018,Female,<55 (<1 to 45-54),all_cvd,I00-I99,17.1,17.0445,-0.1,19946,115040607,17.3,D158,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2019,Female,<55 (<1 to 45-54),all_cvd,I00-I99,16.9,16.8998,0.0,19566,114648908,17.1,D158,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2020,Female,<55 (<1 to 45-54),all_cvd,I00-I99,18.8,18.828,0.0,21676,114475821,18.9,D158,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2021,Female,<55 (<1 to 45-54),all_cvd,I00-I99,19.2,19.2304,0.0,22196,115034847,19.3,D158,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2022,Female,<55 (<1 to 45-54),all_cvd,I00-I99,18.5,18.4994,0.0,21180,114724962,18.5,D158,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2023,Female,<55 (<1 to 45-54),all_cvd,I00-I99,17.1,17.1403,0.0,19830,115348108,17.2,D158,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2024,Female,<55 (<1 to 45-54),all_cvd,I00-I99,16.7,16.7354,0.0,19606,117037084,16.8,D158,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2013,Female,<55 (<1 to 45-54),heart_disease,"I00-I09,I11,I13,I20-I51",12.6,12.5991,0.0,15169,115013428,13.2,D76,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2014,Female,<55 (<1 to 45-54),heart_disease,"I00-I09,I11,I13,I20-I51",12.9,12.9614,0.1,15533,115272951,13.5,D76,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2015,Female,<55 (<1 to 45-54),heart_disease,"I00-I09,I11,I13,I20-I51",13.0,12.9909,0.0,15536,115355816,13.5,D76,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2016,Female,<55 (<1 to 45-54),heart_disease,"I00-I09,I11,I13,I20-I51",12.9,12.9374,0.0,15357,115133115,13.3,D76,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2017,Female,<55 (<1 to 45-54),heart_disease,"I00-I09,I11,I13,I20-I51",12.7,12.6818,0.0,14992,115279209,13.0,D76,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2018,Female,<55 (<1 to 45-54),heart_disease,"I00-I09,I11,I13,I20-I51",12.5,12.5481,0.0,14697,115040607,12.8,D158,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2019,Female,<55 (<1 to 45-54),heart_disease,"I00-I09,I11,I13,I20-I51",12.3,12.2887,0.0,14237,114648908,12.4,D158,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2020,Female,<55 (<1 to 45-54),heart_disease,"I00-I09,I11,I13,I20-I51",13.7,13.7399,0.0,15822,114475821,13.8,D158,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2021,Female,<55 (<1 to 45-54),heart_disease,"I00-I09,I11,I13,I20-I51",13.9,13.9526,0.1,16113,115034847,14.0,D158,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2022,Female,<55 (<1 to 45-54),heart_disease,"I00-I09,I11,I13,I20-I51",13.3,13.3195,0.0,15254,114724962,13.3,D158,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2023,Female,<55 (<1 to 45-54),heart_disease,"I00-I09,I11,I13,I20-I51",12.3,12.2933,0.0,14230,115348108,12.3,D158,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final
+2024,Female,<55 (<1 to 45-54),heart_disease,"I00-I09,I11,I13,I20-I51",12.0,11.9725,0.0,14031,117037084,12.0,D158,"2000 U.S. standard (WONDER, ten-year groups <1 to 45-54)",final

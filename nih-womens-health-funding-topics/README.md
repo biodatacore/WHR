@@ -1,6 +1,6 @@
 # Temporal Trends in National Institutes of Health Funding for Women's Health Research, Fiscal Years 2013–2026: reproduction code (R)
 
-Annotated R code (pipeline v11) that reproduces the numbers and figures of the accompanying brief report on NIH funding for women's health research, fiscal years 2013–2026. The v10 estimates use the RePORTER data freeze of 2026-10-31. Changes from the previous pipeline are in [`../CHANGE_LOG.md`](../CHANGE_LOG.md).
+Annotated R code (pipeline v11c) that reproduces the numbers and figures of the accompanying brief report on NIH funding for women's health research, fiscal years 2013–2026. The estimates use the RePORTER data freeze of 2026-10-31. Changes from the previous pipeline are in [`../CHANGE_LOG.md`](../CHANGE_LOG.md).
 
 Repository: https://github.com/biodatacore/WHR
 
@@ -9,6 +9,18 @@ The code works from publicly available NIH grant records. It estimates the share
 The code is a faithful R port of the analysis pipeline used for the paper. Section numbers in
 comments (S#.#) refer to internal methods sections; the methods are summarized under *Detailed methods* below
 (the paper's brief eMethods give a shorter version).
+
+
+## v11c results at a glance
+
+| | Value |
+|---|---|
+| Women's health research share of all NIH funding, FY2013–15 / FY2023–25 (pooled, dollar-weighted) | 9.02% / 8.93% |
+| Trend FY2013–26, pp/yr (95% CI) | +0.017 (−0.049 to 0.083) |
+| Women's health research project-years, FY2013–2026 | 74,124 |
+| Validation, overall WHR (unweighted / weighted): sensitivity, specificity, κ | 94.5% / 60.8%, 87.2% / 98.7%, 0.81 / 0.68 (see [`../validation_v12/`](../validation_v12/)) |
+
+`Rscript R/run_all.R` on a fresh clone reproduces all 84 checked values in `tests/expected_values.csv` from `data/shipped/`.
 
 ## Terminology used in the code
 
@@ -78,7 +90,7 @@ Subtopics are grouped by how a condition affects women. Autoimmune disease is pr
 
 **Software and code.** The analysis was written in Python 3.13 (pandas, statsmodels) and ported to R 4.5.0 (data.table, stringi, sandwich, ggplot2) in this repository, which draws both figures. `R/07_verify.R` confirms that the R port reproduces every checked value within tolerance. The NASEM committee workbooks are not redistributed.
 
-**Blinded manual validation.** Two reviewers, blinded to any pre-assigned labels, each reviewed 100 grants and verified the accuracy of the automated labeling (WHR status and topic assignments: topic group, subtopic, and predominant or profound category).
+**Blinded manual validation.** Earlier rounds: two reviewers, blinded to any pre-assigned labels, each reviewed 100 grants and verified the accuracy of the automated labeling. Final (v12) round, out of sample for the frozen v11c rules: masked review of a new stratified random sample of 200 project-years, scored unweighted and weighted back to the portfolio (sampling weights N_h/n_h). Overall WHR: sensitivity 94.5% / 60.8% (weighted 95% CI 44.5%–88.5%), specificity 87.2% / 98.7%, κ 0.81 / 0.68 (unweighted / weighted). Design, de-identified item-level results and scoring code are in [`../validation_v12/`](../validation_v12/).
 
 **Figures.** Figure 1: grey bars for all NIH funding with overlaid red WHR bars, red percentage labels (WHR share of NIH funding) drawn as plain text with no background box, FY2026 hatched. Figure 2: three panels stacked vertically (A, predominant / profound / cross-cutting / unclassified as % of all NIH funding; B, predominant families as % of WHR, including osteoporosis and not autoimmune disease; C, profound conditions as % of WHR, with CVD in red and autoimmune disease in place of osteoporosis), FY2026 shaded. Text is set large (13-pt base, 11–12-pt labels) for legibility at page width. End labels in panels A and C are spaced so they do not overlap.
 

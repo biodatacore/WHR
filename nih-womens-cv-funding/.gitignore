@@ -21,3 +21,8 @@ outputs/
 .Rproj.user/
 renv/library/
 .DS_Store
+!inst/extdata/cdc_wonder_women_u55_mortality_2013_2024.csv
+# under-55 CDC WONDER extension (national aggregates; no individual records)
+!mortality_u55/
+!mortality_u55/**
+!tests/expected_values_u55.csv

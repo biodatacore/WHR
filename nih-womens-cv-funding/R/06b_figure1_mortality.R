@@ -60,35 +60,80 @@ for (cs in c("all_cvd", "heart_disease")) {
 TT <- rbindlist(TT); fwrite(TT, out_path("mortality_trends.csv")); fwrite(rbindlist(K), out_path("key_numbers_mortality.csv"))
 print(TT[NW_lag == 1, lapply(.SD, function(x) if (is.numeric(x)) round(x, 3) else x)])
 
-# ---- Figure 1 with mortality overlay -----------------------------------------------------------
+# ---- Figure 1 with mortality overlay (v8/v9 colour style) + panel B, women aged <55 -----------
 R <- readRDS(work_path("cv", "R.rds"))[CV_tier == "broad"]
 d <- data.table(FY = R$FY, tot = R$CV_proj_B, w = R$`Partial tier v3 B`, pct = R$`Partial tier v3 pct_B`)[, inc := FY == INC]
 M[, lab := fifelse(cause == "all_cvd", "c", "d")]
+# Panel B input: CDC WONDER rates for women aged <55 (mortality_u55/; shipped copy in inst/extdata).
+# WHR_U55_CSV overrides the path; WHR_U55_CSV=none draws panel A only.
+U55F <- Sys.getenv("WHR_U55_CSV", "inst/extdata/cdc_wonder_women_u55_mortality_2013_2024.csv")
+U <- if (nzchar(U55F) && U55F != "none" && file.exists(U55F)) fread(U55F)[year %in% 2013:2024][order(cause, year)] else NULL
 labs4 <- c(a = "Total NIH cardiovascular funding", b = "Women's cardiovascular health research",
            c = "Women, all CVD mortality (I00\u2013I99)", d = "Women, heart disease mortality")
+#' Diagonal hatch segments clipped to rectangles (x0, x1, 0, h); asp converts x to y units so lines look ~45 degrees.
+hatch <- function(x0, x1, h, gap = 0.12, asp = 0.86) {
+  out <- list()
+  for (i in seq_along(x0)) {
+    for (c0 in seq(-h[i] / asp, x1[i] - x0[i], by = gap)) {          # line x = x0 + c0 + y/asp
+      ya <- max(0, -c0 * asp); yb <- min(h[i], (x1[i] - x0[i] - c0) * asp)
+      if (yb > ya) out[[length(out) + 1]] <- data.table(x = x0[i] + c0 + ya / asp, y = ya, xend = x0[i] + c0 + yb / asp, yend = yb)
+    }
+  }
+  rbindlist(out)
+}
+di <- d[inc == TRUE]
 p <- ggplot(d) +
   geom_col(aes(FY, tot, fill = "a"), width = 0.7, data = d[inc == FALSE]) +
-  geom_col(aes(FY, tot), width = 0.7, data = d[inc == TRUE], fill = "white", colour = "grey50", linewidth = 0.3, linetype = "22") +
+  geom_col(aes(FY, tot), width = 0.7, data = di, fill = "white", colour = "grey45", linewidth = 0.35) +
+  geom_segment(aes(x, y, xend = xend, yend = yend), data = hatch(di$FY - 0.35, di$FY + 0.35, di$tot), colour = "grey55", linewidth = 0.25) +
   geom_col(aes(FY, w, fill = "b"), width = 0.5, data = d[inc == FALSE]) +
-  geom_col(aes(FY, w), width = 0.5, data = d[inc == TRUE], fill = "#e8a59d", colour = RED, linewidth = 0.3, linetype = "22") +
-  geom_text(aes(FY, w + 0.06, label = sprintf("%.1f%%", pct)), vjust = 0, colour = RED, size = 8 / .pt, family = FONT) +
-  # mortality: drawn on the funding scale after dividing by SCALE, labelled by the secondary axis
+  geom_col(aes(FY, w), width = 0.5, data = di, fill = "#e8a59d", colour = RED, linewidth = 0.35) +
+  geom_segment(aes(x, y, xend = xend, yend = yend), data = hatch(di$FY - 0.25, di$FY + 0.25, di$w, gap = 0.1), colour = RED, linewidth = 0.25) +
+  geom_text(aes(FY, w + 0.06, label = sprintf("%.1f%%", pct)), vjust = 0, colour = RED, size = 9.5 / .pt, family = FONT, data = d[inc == FALSE]) +
+  geom_label(aes(FY, w + 0.06, label = sprintf("%.1f%%", pct)), vjust = 0, colour = RED, size = 9.5 / .pt, family = FONT, data = di,
+             fill = "white", label.size = 0, label.padding = unit(0.04, "lines"), label.r = unit(0, "lines")) +
   geom_line(aes(year, age_adjusted_rate_per_100k / SCALE, linetype = lab), data = M, colour = "black", linewidth = 0.65) +
   scale_fill_manual(values = c(a = "grey85", b = RED), labels = labs4[1:2], name = NULL) +
   scale_linetype_manual(values = c(c = "solid", d = "dashed"), labels = labs4[3:4], name = NULL) +
-  scale_x_continuous(breaks = d$FY, labels = c(head(d$FY, -1), paste0(tail(d$FY, 1), "*")), expand = expansion(add = 0.6)) +
+  scale_x_continuous(breaks = d$FY, labels = c(head(d$FY, -1), paste0(tail(d$FY, 1), "*")), limits = range(d$FY) + c(-0.6, 0.6), expand = c(0, 0)) +
   scale_y_continuous(limits = c(0, 6), breaks = 0:6, expand = c(0, 0),
                      sec.axis = sec_axis(~ . * SCALE, breaks = seq(0, 300, 50), name = "Women's age-adjusted deaths per 100,000")) +
-  labs(x = "Fiscal year", y = "Funding ($ billions)",
-       caption = "*FY2026 funding incomplete. Mortality: CDC WONDER (final through 2024). No 2025\u20132026 mortality data shown.") +
-  guides(fill = guide_legend(order = 1, ncol = 1), linetype = guide_legend(order = 2, ncol = 1, override.aes = list(linewidth = 0.6))) +
-  theme_classic(base_size = 9, base_family = FONT) +
+  labs(x = if (is.null(U)) "Fiscal year" else NULL, y = "Funding ($ billions)", tag = if (is.null(U)) NULL else "A") +
+  guides(fill = guide_legend(order = 1, ncol = 1), linetype = guide_legend(order = 2, ncol = 1, override.aes = list(linewidth = 0.6)))
+th <- theme_classic(base_size = 11, base_family = FONT) +
   theme(axis.line = element_line(linewidth = 0.4), axis.ticks = element_line(linewidth = 0.4),
-        axis.text = element_text(colour = "black", size = 9), axis.title = element_text(size = 9),
+        axis.text = element_text(colour = "black", size = 11), axis.title = element_text(size = 11),
         axis.title.y.right = element_text(angle = 90), legend.key.size = unit(0.35, "cm"), legend.key.width = unit(0.7, "cm"),
-        legend.text = element_text(size = 8), legend.position = "inside", legend.position.inside = c(0.01, 0.99), legend.justification = c(0, 1),
-        legend.box = "horizontal", legend.background = element_blank(),
-        plot.caption = element_text(hjust = 0, size = 7), plot.caption.position = "plot")
-ggsave(out_path("Figure1_mortality.png"), p, width = 7, height = 3.8, dpi = 300, device = ragg::agg_png)
-ggsave(out_path("Figure1_mortality.pdf"), p, width = 7, height = 3.8, device = cairo_pdf)
+        legend.text = element_text(size = 10.5), legend.position = "inside", legend.position.inside = c(0.01, 0.99), legend.justification = c(0, 1),
+        legend.box = "vertical", legend.spacing.y = unit(0.05, "cm"), legend.background = element_blank(),
+        plot.tag = element_text(size = 12, face = "bold", margin = margin(r = 10, b = 6)), plot.tag.position = "topleft", plot.tag.location = "margin",
+        plot.caption = element_text(hjust = 0, size = 9.5), plot.caption.position = "plot")
+cap <- "*FY2026 funding incomplete. Mortality: CDC WONDER (final through 2024). No 2025\u20132026 mortality data shown."
+if (is.null(U)) {
+  p <- p + labs(caption = cap) + th
+  ggsave(out_path("Figure1_mortality.png"), p, width = 7, height = 3.8, dpi = 300, device = ragg::agg_png)
+  ggsave(out_path("Figure1_mortality.pdf"), p, width = 7, height = 3.8, device = cairo_pdf)
+} else {
+  # Panel B: women aged <55, age-adjusted by CDC WONDER (2000 US standard, ten-year groups <1 to 45-54), same causes and years.
+  U[, lab := fifelse(cause == "all_cvd", "e", "f")]
+  labsU <- c(e = "Women aged <55 years, all CVD mortality (I00\u2013I99)", f = "Women aged <55 years, heart disease mortality")
+  pb <- ggplot(U) +
+    geom_line(aes(year, age_adjusted_rate_per_100k, linetype = lab), colour = "black", linewidth = 0.65) +
+    geom_point(aes(year, age_adjusted_rate_per_100k), colour = "black", size = 1.1) +
+    scale_linetype_manual(values = c(e = "solid", f = "dashed"), labels = labsU, name = NULL) +
+    scale_x_continuous(breaks = d$FY, labels = c(head(d$FY, -1), paste0(tail(d$FY, 1), "*")), limits = range(d$FY) + c(-0.6, 0.6), expand = c(0, 0)) +
+    scale_y_continuous(limits = c(0, 30), breaks = seq(0, 30, 10), expand = c(0, 0), position = "right",
+                       name = "Deaths per 100,000") +
+    labs(x = "Fiscal year (funding) / calendar year (mortality)", tag = "B", caption = paste0(cap, "\nB: age-adjusted to the 2000 US standard population, ages <1 to 45\u201354 years.")) +
+    guides(linetype = guide_legend(ncol = 1, override.aes = list(linewidth = 0.6))) + th +
+    theme(axis.line.y.left = element_blank(), legend.position.inside = c(0.01, 0.03), legend.justification = c(0, 0))
+  g <- rbind(ggplotGrob(p + th), ggplotGrob(pb), size = "max")
+  pa_rows <- unique(g$layout$t[grepl("^panel", g$layout$name)])
+  g$heights[pa_rows[1]] <- unit(3, "null"); g$heights[pa_rows[2]] <- unit(1.25, "null")
+  for (f in c("png", "pdf")) {
+    fn <- out_path(paste0("Figure1_mortality.", f))
+    if (f == "png") ragg::agg_png(fn, width = 7, height = 5.9, units = "in", res = 300) else cairo_pdf(fn, width = 7, height = 5.9)
+    grid::grid.newpage(); grid::grid.draw(g); dev.off()
+  }
+}
 say("Figure1_mortality and mortality trend tests written to ", CONFIG$out_dir)

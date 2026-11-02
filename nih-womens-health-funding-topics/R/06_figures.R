@@ -27,18 +27,35 @@ save_fig <- function(p, name, w, h) {
 }
 
 #' Overlapping bar chart: totals (grey, wide) with the WHR part (red, narrow, in front).
+#' Diagonal hatch segments clipped to rectangles (x0, x1, 0, h), as in the CV Figure 1 (06b);
+#' asp converts x to y units so lines look ~45 degrees on this panel.
+hatch <- function(x0, x1, h, gap = 0.12, asp = 5.6) {
+  out <- list()
+  for (i in seq_along(x0)) {
+    for (c0 in seq(-h[i] / asp, x1[i] - x0[i], by = gap)) {
+      ya <- max(0, -c0 * asp); yb <- min(h[i], (x1[i] - x0[i] - c0) * asp)
+      if (yb > ya) out[[length(out) + 1]] <- data.table(x = x0[i] + c0 + ya / asp, y = ya, xend = x0[i] + c0 + yb / asp, yend = yb)
+    }
+  }
+  rbindlist(out)
+}
+#' Overlapping bar chart: totals (grey, wide) with the WHR part (red, narrow, in front); FY2026 hatched.
 bars <- function(y, tot, w, pct, ymax, step, off, legend, name) {
-  d <- data.table(FY = y, tot = tot, w = w, pct = pct, inc = y == INC)
+  d <- data.table(FY = y, tot = tot, w = w, pct = pct, inc = y == INC); di <- d[inc == TRUE]
   p <- ggplot(d) +
     geom_col(aes(FY, tot, fill = "a"), width = 0.7, data = d[inc == FALSE]) +
-    geom_col(aes(FY, tot), width = 0.7, data = d[inc == TRUE], fill = "white", colour = "grey50", linewidth = 0.3, linetype = "22") +
+    geom_col(aes(FY, tot), width = 0.7, data = di, fill = "white", colour = "grey45", linewidth = 0.35) +
+    geom_segment(aes(x, y, xend = xend, yend = yend), data = hatch(di$FY - 0.35, di$FY + 0.35, di$tot), colour = "grey55", linewidth = 0.25) +
     geom_col(aes(FY, w, fill = "b"), width = 0.5, data = d[inc == FALSE]) +
-    geom_col(aes(FY, w), width = 0.5, data = d[inc == TRUE], fill = "#e8a59d", colour = RED, linewidth = 0.3, linetype = "22") +
-    geom_text(aes(FY, w + off, label = sprintf("%.1f%%", pct)), vjust = 0, colour = RED, size = 11 / .pt, family = FONT) +
+    geom_col(aes(FY, w), width = 0.5, data = di, fill = "#e8a59d", colour = RED, linewidth = 0.35) +
+    geom_segment(aes(x, y, xend = xend, yend = yend), data = hatch(di$FY - 0.25, di$FY + 0.25, di$w, gap = 0.1), colour = RED, linewidth = 0.25) +
+    geom_text(aes(FY, w + off, label = sprintf("%.1f%%", pct)), vjust = 0, colour = RED, size = 12 / .pt, family = FONT, data = d[inc == FALSE]) +
+    geom_label(aes(FY, w + off, label = sprintf("%.1f%%", pct)), vjust = 0, colour = RED, size = 12 / .pt, family = FONT, data = di,
+               fill = "white", label.size = 0, label.padding = unit(0.04, "lines"), label.r = unit(0, "lines")) +
     scale_fill_manual(values = c(a = "grey85", b = RED), labels = legend, name = NULL) +
     scale_x_continuous(breaks = y, labels = c(paste0("'", substr(head(y, -1), 3, 4)), paste0("'", substr(tail(y, 1), 3, 4), "*")), expand = expansion(add = 0.6)) +
     scale_y_continuous(limits = c(0, ymax), breaks = seq(0, ymax, step), expand = c(0, 0)) +
-    labs(x = "Fiscal year", y = "Funding ($ billions)") + theme_min(13) +
+    labs(x = "Fiscal year", y = "Funding ($ billions)") + theme_min(14) +
     theme(legend.position = c(0.01, 0.99), legend.justification = c(0, 1))
   save_fig(p, name, 7.5, 4.6)
 }
@@ -62,18 +79,18 @@ spread <- function(v, gap) { o <- order(v); s <- v[o]
   for (it in 1:200) for (i in 2:length(s)) if (s[i] - s[i - 1] < gap) { m <- (s[i] + s[i - 1]) / 2; s[i - 1] <- m - gap / 2; s[i] <- m + gap / 2 }
   out <- numeric(length(v)); out[o] <- s; out }
 panel <- function(spec, M, den, ylab, tag, gap) {
-  d <- rbindlist(lapply(spec, function(s) data.table(FY = y, v = 100 * M[, s[1]] / den, lab = s[2], col = s[3], lt = s[4])))
+  d <- rbindlist(lapply(spec, function(s) data.table(FY = y, v = 100 * M[, s[1]] / den, lab = s[2], col = s[3], lt = s[4], hi = FALSE)))
   e <- d[FY == max(y)]; e[, ly := spread(v, gap)]
   ggplot(d, aes(FY, v, group = lab)) +
     annotate("rect", xmin = INC - 0.5, xmax = INC + 0.5, ymin = -Inf, ymax = Inf, fill = "grey92") +
     geom_line(aes(colour = col, linetype = lt, linewidth = col == RED)) +
-    geom_text(aes(x = INC + 0.7, y = ly, label = lab, colour = ifelse(col == G, "grey40", col)), data = e, hjust = 0, size = 12 / .pt, family = FONT) +
+    geom_text(aes(x = INC + 0.7, y = ly, label = lab, colour = ifelse(col == G, "grey35", col)), data = e, hjust = 0, size = 13 / .pt, family = FONT) +
     { if (tag == "A") annotate("text", x = INC, y = Inf, label = "FY2026\nincomplete", vjust = -0.2, size = 11 / .pt, colour = "grey35", family = FONT) } +
-    scale_colour_identity() + scale_linetype_identity() + scale_linewidth_manual(values = c(`FALSE` = 0.55, `TRUE` = 0.7), guide = "none") +
+    scale_colour_identity() + scale_linetype_identity() + scale_linewidth_manual(values = c(`FALSE` = 0.6, `TRUE` = 0.9), guide = "none") +
     scale_x_continuous(breaks = seq(2013, 2025, 2)) +
     scale_y_continuous(limits = c(0, max(d$v) * 1.2)) + coord_cartesian(xlim = c(2012.6, 2026.5), expand = FALSE, clip = "off") +
-    labs(x = "Fiscal year", y = ylab, tag = tag) + theme_min(13) +
-    theme(axis.line.x = element_blank(), plot.margin = margin(40, 210, 8, 5), plot.tag = element_text(face = "bold", size = 14), plot.tag.position = "topleft", plot.tag.location = "margin") +
+    labs(x = "Fiscal year", y = ylab, tag = tag) + theme_min(14) +
+    theme(axis.line.x = element_blank(), plot.margin = margin(40, 210, 8, 5), plot.tag = element_text(face = "bold", size = 14, margin = margin(r = 14, b = 10)), plot.tag.position = "topleft", plot.tag.location = "margin") +
     annotate("segment", x = 2012.6, xend = INC + 0.5, y = -Inf, yend = -Inf, linewidth = 0.4)
 }
 #' Figure 2 (v2): predominant vs profound categories (see 05_topics.R). A: categories, % of all NIH

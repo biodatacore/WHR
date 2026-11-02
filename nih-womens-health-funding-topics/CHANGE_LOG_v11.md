@@ -45,3 +45,6 @@ The v11 numbers (after the IBS/binge-eating restoration, the INOCA/MINOCA move a
 | WHR project-years | 76,374 | 72,953 | 73,314 |
 
 Verification: the v11b expected values pass in clean copies run from the shipped cache alone (total WHR 84/84, CV 201/201).
+
+## v11c (2026-11-01): D3 softened (maternal-fetal protection)
+* D3 now keeps maternal-fetal grants. A grant is kept when it has at least 2 maternal-fetal protection terms (new column `mfprot`: preeclampsia/HDP, maternal-fetal medicine/network, MFMU, pregnancy complications, obstetric disease, pregnant women, ...) and those terms plus IUGR terms (`iugr`) outnumber birthweight/fetal-growth terms (`bw`). Only grants with purely fetal or offspring outcomes are excluded. No other rule changed.

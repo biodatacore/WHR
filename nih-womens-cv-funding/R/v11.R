@@ -122,6 +122,10 @@ V11_FETOFF <- r"---(\bfetal\b|\bfetus(?:es)?\b|\boffspring\b|\bin[- ]utero\b|\bp
 V11_SEXAIM <- r"---(\b(?:role|impact|effects?|influence|contribution|importance) of (?:biological )?sex\b(?! (?:hormones?|steroids?|workers?|work|trafficking|education|partners?|offenders?|chromosomes?))|\bsex[- ]specific (?:differences|mechanisms|effects|responses|signaling|patterns)|\b(?:describe|characteri[sz]e|compare|examine|test|determine|assess|evaluate)\b[^.;]{0,60}\bby (?:[a-z]+, )*(?:and )?sex\b(?!ual)|\b(?:compare|comparing|comparison of|contrast\w*)\b[^.;]{0,30}\b(?:males? (?:and|vs\.?|versus|with) females?|females? (?:and|vs\.?|versus|with) males?|men (?:and|vs\.?|versus|with) women|women (?:and|vs\.?|versus|with) men)\b|\bsex[- ]by[- ]\w+ interactions?|\b(?:moderat|modif)\w* by (?:biological )?sex\b|\bsex (?:as a|is a) (?:key |critical |major )?(?:moderator|modifier))---"
 # D3 strictly maternal outcomes / conditions (the v10 matout list also matches fetal-oriented pregnancy terms)
 V11_MATCOND <- r"---(\bpre-?eclampsia|\beclampsia|\bgestational (?:diabetes|hypertension|weight gain)|\bhypertensive disorders? of pregnancy|\bpostpartum (?:hemorrhage|depression|hypertension|weight|health|care|period|women)|\bmaternal (?:mortality|morbidity|health|outcomes?|complications?|deaths?|weight gain|blood pressure|cardiovascular|hypertension|diabetes|obesity)|\bsevere maternal|\bpregnant (?:women|people|individuals|persons|patients)|\bwomen during pregnancy|\bmiscarriage|\bcesarean|\binfertil\w*|\bcontracep\w*|\bmenstru\w*|\bmenopaus\w*)---"
+# D3 (v11c) maternal-fetal protection: maternal-fetal medicine / pregnancy-complication terms, IUGR, birthweight outcomes
+V11_MFPROT <- r"---(\bpre-?eclampsia|\beclampsia|\bhypertensive disorders? of pregnancy|\bmaternal[- ]fetal (?:medicine|network|health|perfusion|interface)|\bmfmu\b|\bpregnancy complications?|\bpregnancies complicated|\bcomplicated pregnanc\w*|\bobstetric(?:al)? (?:diseases?|complications?|patients|outcomes|care)|\babruptio placentae|\bplacental abruption|\bcardiovascular (?:adaptations?|health) (?:of|in|during|from) pregnancy|\bpregnancy onward|\bpregnant wom[ae]n|\b(?:first-time|under-resourced|pregnant) mothers)---"
+V11_IUGR <- r"---(\biugr\b|\bintrauterine growth restriction|\bfetal growth restriction)---"
+V11_BW <- r"---(\bbirth ?weights?\b|\bfetal growth\b(?! restriction)|\bsmall for gestational age|\bsga\b)---"
 # D5 men-only phrases without the bare "mros" acronym (also mitochondrial ROS)
 V11_MENONLY2 <- r"---(\b(?:men|males?) only\b|\bonly (?:men|males)\b|\ball[- ]male\b|\b(?:older|elderly|aging|ageing|middle[- ]aged|hypogonadal|community[- ]dwelling) men\b|\bmale (?:veterans|participants|subjects|volunteers|cohort)\b|\bmros (?:study|cohort|sleep|participants|men)\b|\bosteoporotic fractures in men\b|\btestosterone trials?\b|\bmen who have sex with men\b|\bmsm\b)---"
 # D5 female animals (an ovariectomy model is not men-only)
@@ -138,7 +142,8 @@ V11_FEATURES <- c(setNames(as.list(V11_FP$pattern), paste0("fp_", V11_FP$name)),
                        tool = V11_TOOL, mmtv = V11_MMTV, menonly = V11_MENONLY,
                        pahacr = V11_PAHACR, phctx = V11_PHCTX, pahx = V11_PAHX, ibsacr = V11_IBSACR, cmd = V11_CMD, fetoff = V11_FETOFF,
                        sexaim = V11_SEXAIM, femanimal = V11_FEMANIMAL, wonly = V11_WONLY, wenroll = V11_WENROLL, menword = V11_MENWORD,
-                       matcond = V11_MATCOND, menonly2 = V11_MENONLY2))
+                       matcond = V11_MATCOND, menonly2 = V11_MENONLY2,
+                       mfprot = V11_MFPROT, iugr = V11_IUGR, bw = V11_BW))
 
 v11_features <- function(P, fy) {
   X <- v10_features(P, fy)
@@ -152,7 +157,7 @@ v11_features <- function(P, fy) {
 #' Tiers: v10 tiers with the v11 switches. With no v11 switch on, identical to v10_assign_tiers().
 v11_assign_tiers <- function(X) {
   if (!length(V11)) return(v10_assign_tiers(X))
-  miss <- setdiff(c(paste0("fp_", V11_FP$name), "mexpo", "offout", "matstrong", "tool", "mmtv", "menonly", if (any(grepl("^D", V11))) c("pahacr", "phctx", "pahx", "ibsacr", "cmd", "fetoff", "sexaim", "femanimal", "wonly", "wenroll", "menword", "matcond", "menonly2")), names(X))
+  miss <- setdiff(c(paste0("fp_", V11_FP$name), "mexpo", "offout", "matstrong", "tool", "mmtv", "menonly", if (any(grepl("^D", V11))) c("pahacr", "phctx", "pahx", "ibsacr", "cmd", "fetoff", "sexaim", "femanimal", "wonly", "wenroll", "menword", "matcond", "menonly2", "mfprot", "iugr", "bw")), names(X))
   if (length(miss)) stop("Cached WHR features lack v11 columns (", paste(head(miss, 5), collapse = ", "),
                          ", ...). data/shipped is a pre-v11 cache; rebuild with WHR_REBUILD=1 or set WHR_V11_RULES=none. See README.md.")
   CENT <- grepl(CENTER_ACTIVITY, fifelse(is.na(X$ACT), "", X$ACT), perl = TRUE) |
@@ -257,7 +262,9 @@ v11_assign_tiers <- function(X) {
   # sex-differences or women-only-cohort rule applies; D5 men-only studies are never WHR;
   # D6 women-only cohorts always are
   fetal_only <- if (v11_on("D3")) !X$t_matcond & ((X$fetoff >= 3 & X$matcond <= 2 & X$fetoff >= 4 * X$matcond) | (X$t_fetoff & X$matcond <= 1) |
-    (X$fetoff >= 1 & X$matcond == 0 & X$women == 0)) & !X$sexdiff & !v1$breast_cancer & !v1$multicancer & !wonly_v & !fpD else rep(FALSE, nrow(X))
+    (X$fetoff >= 1 & X$matcond == 0 & X$women == 0)) & !X$sexdiff &
+    # v11c: keep maternal-fetal medicine / pregnancy-complication grants unless birthweight outcomes dominate
+    !(X$mfprot >= 2 & X$mfprot + X$iugr > X$bw) & !v1$breast_cancer & !v1$multicancer & !wonly_v & !fpD else rep(FALSE, nrow(X))
   men_only <- if (v11_on("D5")) menonly else rep(FALSE, nrow(X))
   set(X, j = "t3", value = ((X$t3 & !fetal_only) | wonly_v) & !men_only)
   set(X, i = which(wonly_v & X$r1 == "" & X$r2 == "" & X$r3 == ""), j = "r1", value = "women_only_cohort")

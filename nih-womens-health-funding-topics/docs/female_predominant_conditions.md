@@ -1,6 +1,8 @@
 # Female-predominant conditions (pipeline v11)
 
-One count column per condition in the WHR feature tables (`fp_<name>`, title flag `t_fp_<name>`; patterns in `R/v11.R`). Tier A (female:male >= 2:1, or >= two-thirds women) counts as WHR when the condition is central to the grant: >= 2 mentions of that condition or a title hit. Tier B (about 1.5-2:1, or affects women differently) counts only with a women focus (women in the title or >= 3 mentions) or substantive sex-differences research. Depression, anxiety, PTSD and Alzheimer's disease keep the women-focus rule of earlier versions. Not added as stand-alone terms: generic "autoimmune", knee osteoarthritis, long COVID, hypermobile Ehlers-Danlos syndrome, borderline personality disorder. Ratios are approximate literature values from public sources; check them before citing.
+One count column per condition in the WHR feature tables (`fp_<name>`, title flag `t_fp_<name>`; patterns in `R/v11.R`). Tier A (female:male >= 2:1, or >= two-thirds women) counts as WHR when the condition (or its acronym MS, SLE, IBS, ME/CFS or POTS) is in the title, or has >= 2 mentions and the grant is women-focused (women in the title, >= 3 mentions of women, or substantive sex-differences research). Men-only studies (`menonly` phrase such as "older men", "men only", MrOS or the Testosterone Trials, with no women terms) never qualify. Tier B (HFpEF and intimate partner violence) counts only with a women focus (women in the title or >= 3 mentions) or substantive sex-differences research. Depression, anxiety, PTSD and Alzheimer's disease keep the women-focus rule of earlier versions. Not added as stand-alone terms: generic "autoimmune", knee osteoarthritis, long COVID, hypermobile Ehlers-Danlos syndrome, borderline personality disorder. Ratios are approximate literature values from public sources; check them before citing.
+
+v11b (switches D1, D2): pulmonary arterial hypertension, irritable bowel syndrome, binge-eating disorder, INOCA, MINOCA and coronary microvascular dysfunction (column `cmd`, any "coronary microvascular ..." phrase) count whenever they are a topic of the grant. One mention in the title or abstract is enough, including the acronyms PAH (with pulmonary-hypertension context) and IBS, and no women focus is needed. Men-only studies are never WHR (D5).
 
 | Column | Condition | Tier | Female:male | Source | Added |
 |---|---|---|---|---|---|
@@ -23,8 +25,8 @@ One count column per condition in the WHR feature tables (`fp_<name>`, title fla
 | `fp_uti` | Urinary tract infection | A | ~30:1 adults | https://www.niddk.nih.gov/health-information/urologic-diseases/bladder-infection-uti-in-adults | v10 list |
 | `fp_ed` | Anorexia nervosa / bulimia | A | ~3:1 | https://www.nimh.nih.gov/health/statistics/eating-disorders | v10 list |
 | `fp_lam` | Lymphangioleiomyomatosis | A | almost exclusively women | https://www.nhlbi.nih.gov/health/lam | v10 list |
-| `fp_ibs` | Irritable bowel syndrome | B | ~1.5-2:1 | https://www.niddk.nih.gov/health-information/digestive-diseases/irritable-bowel-syndrome | v10 list |
-| `fp_binge` | Binge-eating disorder | B | ~1.7:1 (3.5% vs 2.0% lifetime) | https://www.nimh.nih.gov/health/statistics/eating-disorders | v10 list |
+| `fp_ibs` | Irritable bowel syndrome | A | ~1.5-2:1 | https://www.niddk.nih.gov/health-information/digestive-diseases/irritable-bowel-syndrome | v10 list |
+| `fp_binge` | Binge-eating disorder | A | ~1.7:1 (3.5% vs 2.0% lifetime) | https://www.nimh.nih.gov/health/statistics/eating-disorders | v10 list |
 | `fp_scad` | Spontaneous coronary artery dissection | A | ~90% women | https://doi.org/10.1161/CIR.0000000000000564 | v11 |
 | `fp_takotsubo` | Takotsubo cardiomyopathy | A | ~90% women (mostly postmenopausal) | https://doi.org/10.1161/CIR.0000000000000564 | v11 |
 | `fp_pah` | Pulmonary arterial hypertension | A | ~4:1 (registry ~80% women) | https://www.nhlbi.nih.gov/health/pulmonary-hypertension | v11 |
@@ -40,7 +42,7 @@ One count column per condition in the WHR feature tables (`fp_<name>`, title fla
 | `fp_gcapmr` | Giant cell arteritis / PMR | A | ~2-3:1 | https://www.niams.nih.gov/health-topics/polymyalgia-rheumatica-giant-cell-arteritis | v11 |
 | `fp_lichen` | Lichen sclerosus | A | ~6-10:1 | https://www.niams.nih.gov/health-topics/lichen-sclerosus | v11 |
 | `fp_pop` | Pelvic floor disorders / pelvic organ prolapse | A | prolapse female-specific; ~25% of women | https://www.nichd.nih.gov/health/topics/pelvicfloor | v11 |
-| `fp_inoca` | INOCA / coronary microvascular dysfunction | B (women/sex-differences focus) | majority women in angina-no-obstruction cohorts; worse outcomes | https://doi.org/10.1161/CIR.0000000000000564 | v11 |
-| `fp_minoca` | MINOCA | B (women/sex-differences focus) | ~40-50% women (vs ~25% of MI) | https://doi.org/10.1161/CIR.0000000000000670 | v11 |
+| `fp_inoca` | INOCA / coronary microvascular dysfunction | A | majority women in angina-no-obstruction cohorts; worse outcomes | https://doi.org/10.1161/CIR.0000000000000564 | v11 |
+| `fp_minoca` | MINOCA | A | ~40-50% women (vs ~25% of MI) | https://doi.org/10.1161/CIR.0000000000000670 | v11 |
 | `fp_hfpef` | HFpEF | B (women/sex-differences focus) | ~55-65% women | https://www.nhlbi.nih.gov/health/heart-failure | v11 |
 | `fp_ipv` | Intimate partner violence (severe) | B (women/sex-differences focus) | severe IPV ~1 in 4 women vs 1 in 10 men; profound | https://www.cdc.gov/intimate-partner-violence/about/ | v11 |
